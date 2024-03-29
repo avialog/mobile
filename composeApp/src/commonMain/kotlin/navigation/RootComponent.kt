@@ -5,13 +5,15 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.pushNew
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import di.di
+import domain.IsUserLoggedIn
 import domain.LoginWithEmailAndPassword
+import domain.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
-import screens.home.HomeComponent
-import screens.login.LoginComponent
+import ui.screens.home.HomeComponent
+import ui.screens.login.LoginComponent
 
 class RootComponent(
     componentContext: ComponentContext,
@@ -34,13 +36,18 @@ class RootComponent(
         return when (config) {
             Configuration.Login -> {
                 val loginWithEmailAndPassword: LoginWithEmailAndPassword by di.instance()
+                val registerWithEmailAndPassword: RegisterWithEmailAndPassword by di.instance()
+                val isUserLoggerIn: IsUserLoggedIn by di.instance()
+
                 Child.Login(
                     LoginComponent(
                         componentContext = context,
                         onNavigateToHome = {
-                            navigation.pushNew(Configuration.Home)
+                            navigation.replaceCurrent(Configuration.Home)
                         },
                         loginWithEmailAndPassword = loginWithEmailAndPassword,
+                        registerWithEmailAndPassword = registerWithEmailAndPassword,
+                        isUserLoggedIn = isUserLoggerIn,
                     ),
                 )
             }

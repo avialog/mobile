@@ -12,6 +12,7 @@ androidx-material = "1.11.0"
 androidx-test-junit = "1.1.5"
 compose = "1.6.2"
 compose-plugin = "1.6.0"
+firebaseAuth = "1.11.1"
 junit = "4.13.2"
 kodeinDi = "7.2.0"
 kodeinDiFrameworkCompose = "7.21.1"
@@ -23,6 +24,7 @@ kotlinx-atomicfu = "0.23.2"
 
 [libraries]
 decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "extensionsComposeJetbrains" }
+firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseAuth" }
 kodein-di = { module = "org.kodein.di:kodein-di", version.ref = "kodeinDi" }
 kodein-di-framework-compose = { module = "org.kodein.di:kodein-di-framework-compose", version.ref = "kodeinDiFrameworkCompose" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

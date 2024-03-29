@@ -2,14 +2,14 @@ package domain
 
 import data.repository.auth.IAuthRepository
 
-class LoginWithEmailAndPassword(
+class RegisterWithEmailAndPassword(
     private val authRepository: IAuthRepository,
 ) {
     suspend operator fun invoke(
         email: String,
         password: String,
     ) {
-        authRepository.loginWithEmailAndPassword(
+        authRepository.registerWithEmailAndPassword(
             email = email,
             password = password,
         )

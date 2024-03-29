@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinSerialization)
+    id("com.google.gms.google-services")
 }
 
 kotlin {
@@ -45,6 +46,7 @@ kotlin {
             implementation(libs.kodein.di)
             implementation(libs.kodein.di.framework.compose)
             implementation(libs.kotlinx.atomicfu)
+            implementation(libs.firebase.auth)
         }
     }
 }

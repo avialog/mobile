@@ -1,4 +1,4 @@
-package screens.home
+package ui.screens.home
 
 import com.arkivanov.decompose.ComponentContext
 

@@ -1,4 +1,4 @@
-package screens.login
+package ui.screens.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

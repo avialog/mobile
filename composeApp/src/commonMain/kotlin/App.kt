@@ -7,8 +7,8 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import navigation.RootComponent
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import screens.home.HomeDestination
-import screens.login.LoginDestination
+import ui.screens.home.HomeDestination
+import ui.screens.login.LoginDestination
 
 @Composable
 @Preview
