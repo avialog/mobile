@@ -7,8 +7,8 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import navigation.RootComponent
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import screens.home.HomeScreen
-import screens.login.LoginScreen
+import screens.home.HomeDestination
+import screens.login.LoginDestination
 
 @Composable
 @Preview
@@ -20,8 +20,8 @@ fun App(root: RootComponent) {
             animation = stackAnimation(slide()),
         ) { child ->
             when (val instance = child.instance) {
-                is RootComponent.Child.Login -> LoginScreen(loginComponent = instance.component)
-                is RootComponent.Child.Home -> HomeScreen(homeComponent = instance.component)
+                is RootComponent.Child.Login -> LoginDestination(loginComponent = instance.component)
+                is RootComponent.Child.Home -> HomeDestination(homeComponent = instance.component)
             }
         }
     }

@@ -4,6 +4,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun HomeScreen(homeComponent: HomeComponent) {
+fun HomeDestination(homeComponent: HomeComponent) {
     Text(text = "Home")
 }

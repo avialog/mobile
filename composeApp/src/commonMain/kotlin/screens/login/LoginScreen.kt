@@ -6,13 +6,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LoginScreen(loginComponent: LoginComponent) {
+fun LoginScreen(
+    state: LoginState,
+    onNewEvent: (LoginEvent) -> Unit,
+) {
     Column {
         Text(text = "login")
 
         Button(
             onClick = {
-                loginComponent.loginClick()
+                onNewEvent(LoginEvent.LoginClick)
             },
         ) {
             Text("Login")

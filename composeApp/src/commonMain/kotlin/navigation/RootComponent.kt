@@ -6,7 +6,10 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
+import di.di
+import domain.LoginWithEmailAndPassword
 import kotlinx.serialization.Serializable
+import org.kodein.di.instance
 import screens.home.HomeComponent
 import screens.login.LoginComponent
 
@@ -29,15 +32,18 @@ class RootComponent(
         context: ComponentContext,
     ): Child {
         return when (config) {
-            Configuration.Login ->
+            Configuration.Login -> {
+                val loginWithEmailAndPassword: LoginWithEmailAndPassword by di.instance()
                 Child.Login(
                     LoginComponent(
                         componentContext = context,
                         onNavigateToHome = {
                             navigation.pushNew(Configuration.Home)
                         },
+                        loginWithEmailAndPassword = loginWithEmailAndPassword,
                     ),
                 )
+            }
 
             Configuration.Home -> {
                 Child.Home(
