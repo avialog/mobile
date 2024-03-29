@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kodein.di)
             implementation(libs.kodein.di.framework.compose)
+            implementation(libs.kotlinx.atomicfu)
         }
     }
 }
