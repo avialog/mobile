@@ -1,9 +1,8 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -14,23 +13,24 @@ kotlin {
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
     }
-    
+
     sourceSets {
-        
+
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.decompose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -39,6 +39,12 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.decompose)
+            implementation(libs.decompose.jetbrains)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kodein.di)
+            implementation(libs.kodein.di.framework.compose)
+            implementation(libs.kotlinx.atomicfu)
         }
     }
 }
@@ -76,4 +82,3 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
-
