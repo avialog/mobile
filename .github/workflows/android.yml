@@ -1,0 +1,27 @@
+name: Android
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+      - name: Run gradle tests
+        run: ./gradlew test
+      - name: Build gradle project
+        run: ./gradlew build
+      - name: Build apk release
+        run: ./gradlew assembleRelease
