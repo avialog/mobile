@@ -20,9 +20,9 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       - name: Load keystore
-        run: echo ${{secrets.JKS}} | base64 > avialog.jks
+        run: echo ${{secrets.JKS}} | base64 -d > avialog.jks
       - name: Load key.properties
-        run: echo ${{secrets.KEY_PROPERTIES}} | base64 > key.properties
+        run: echo ${{secrets.KEY_PROPERTIES}} | base64 -d > key.properties
       - name: Run gradle tests
         run: ./gradlew test
       - name: Build gradle project
