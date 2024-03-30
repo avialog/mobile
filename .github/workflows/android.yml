@@ -23,5 +23,5 @@ jobs:
         run: ./gradlew test
       - name: Build gradle project
         run: ./gradlew build
-      - name: Build apk release
-        run: ./gradlew assembleRelease
+      - name: Build AAB
+        run: ./gradlew bundleRelease
