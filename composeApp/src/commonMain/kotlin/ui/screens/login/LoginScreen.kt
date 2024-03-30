@@ -34,6 +34,7 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.Eye
 import compose.icons.fontawesomeicons.regular.EyeSlash
+import ui.components.InputWithSupportingText
 import ui.components.Loader
 import ui.components.LoaderFullScreen
 
@@ -59,6 +60,7 @@ fun LoginScreen(
                 email = state.email,
                 password = state.password,
                 onNewEvent = onNewEvent,
+                showErrorIfAny = state.showErrorIfAny,
             )
             TextButton(
                 onClick = {
@@ -88,68 +90,83 @@ fun LoginScreen(
 private fun Inputs(
     email: String,
     password: String,
+    showErrorIfAny: Boolean,
     onNewEvent: (LoginEvent) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
     ) {
         val focusManager = LocalFocusManager.current
-        OutlinedTextField(
-            value = email,
-            label = {
-                Text(text = "E-mail")
-            },
-            onValueChange = {
-                onNewEvent(LoginEvent.EmailChange(it))
-            },
-            singleLine = true,
-            keyboardOptions =
-                KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                ),
-            keyboardActions =
-                KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
+        val emailError = email.getEmailErrorTextOrNull()?.takeIf { showErrorIfAny }
+        InputWithSupportingText(
+            input = {
+                OutlinedTextField(
+                    value = email,
+                    label = {
+                        Text(text = "E-mail")
                     },
-                ),
-            modifier = Modifier.fillMaxWidth(),
+                    onValueChange = {
+                        onNewEvent(LoginEvent.EmailChange(it))
+                    },
+                    singleLine = true,
+                    keyboardOptions =
+                        KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                        ),
+                    keyboardActions =
+                        KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            },
+                        ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            supportingText = emailError,
+            isError = true,
         )
-        val showPassword =
-            remember {
-                mutableStateOf(false)
-            }
-        OutlinedTextField(
-            value = password,
-            label = {
-                Text(text = "Password")
-            },
-            onValueChange = {
-                onNewEvent(LoginEvent.PasswordChange(it))
-            },
-            singleLine = true,
-            keyboardOptions =
-                KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                ),
-            trailingIcon = {
-                val icon =
-                    if (showPassword.value) {
-                        FontAwesomeIcons.Regular.EyeSlash
-                    } else {
-                        FontAwesomeIcons.Regular.Eye
-                    }
 
-                IconButton(onClick = { showPassword.value = !showPassword.value }, modifier = Modifier.size(size = 24.dp)) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = "Visibility",
-                        tint = Color.Black,
-                    )
-                }
+        InputWithSupportingText(
+            input = {
+                val showPassword =
+                    remember {
+                        mutableStateOf(false)
+                    }
+                OutlinedTextField(
+                    value = password,
+                    label = {
+                        Text(text = "Password")
+                    },
+                    onValueChange = {
+                        onNewEvent(LoginEvent.PasswordChange(it))
+                    },
+                    singleLine = true,
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                        ),
+                    trailingIcon = {
+                        val icon =
+                            if (showPassword.value) {
+                                FontAwesomeIcons.Regular.EyeSlash
+                            } else {
+                                FontAwesomeIcons.Regular.Eye
+                            }
+
+                        IconButton(onClick = { showPassword.value = !showPassword.value }, modifier = Modifier.size(size = 24.dp)) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = "Visibility",
+                                tint = Color.Black,
+                            )
+                        }
+                    },
+                    visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             },
-            visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
+            supportingText = password.getPasswordErrorTextOrNull()?.takeIf { showErrorIfAny },
+            isError = true,
         )
     }
 }

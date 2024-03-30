@@ -12,6 +12,7 @@ import org.kodein.di.DI
 import org.kodein.di.bindProvider
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+import ui.screens.login.AreLoginInputsValid
 
 val di =
     DI {
@@ -37,5 +38,8 @@ val di =
         }
         bindSingleton<FirebaseAuth> {
             Firebase.auth
+        }
+        bindProvider<AreLoginInputsValid> {
+            AreLoginInputsValid()
         }
     }

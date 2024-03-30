@@ -5,6 +5,7 @@ data class LoginState(
     val password: String,
     val isRequestInProgress: Boolean,
     val showFullScreenLoader: Boolean,
+    val showErrorIfAny: Boolean,
 )
 
 sealed interface LoginEvent {

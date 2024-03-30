@@ -13,6 +13,7 @@ class LoginComponent(
     private val loginWithEmailAndPassword: LoginWithEmailAndPassword,
     private val registerWithEmailAndPassword: RegisterWithEmailAndPassword,
     private val isUserLoggedIn: IsUserLoggedIn,
+    private val areLoginInputsValid: AreLoginInputsValid,
     private val onNavigateToHome: () -> Unit,
 ) :
     BaseMviViewModel<LoginState, LoginEvent>(
@@ -23,6 +24,7 @@ class LoginComponent(
                     password = "",
                     isRequestInProgress = false,
                     showFullScreenLoader = true,
+                    showErrorIfAny = false,
                 ),
         ) {
     override fun initialised() {
@@ -63,42 +65,56 @@ class LoginComponent(
     }
 
     private fun onLoginClick() {
-        viewModelScope.launch {
-            if (!actualState.isRequestInProgress) {
-                updateState {
-                    copy(isRequestInProgress = true)
-                }
-                runCatching {
-                    loginWithEmailAndPassword(
-                        email = actualState.email,
-                        password = actualState.password,
-                    )
-                }.onSuccess {
-                    onNavigateToHome()
-                }.onFailure {
-                    ensureActive()
-                    it.printStackTrace()
-                    updateState {
-                        copy(isRequestInProgress = false)
-                    }
-                }
-            }
+        makeLoginOrRegisterRequest { email, password ->
+            loginWithEmailAndPassword(
+                email = email,
+                password = password,
+            )
         }
     }
 
     private fun onRegisterClick() {
+        makeLoginOrRegisterRequest { email, password ->
+            registerWithEmailAndPassword(
+                email = email,
+                password = password,
+            )
+        }
+    }
+
+    private fun makeLoginOrRegisterRequest(request: suspend (String, String) -> Unit) {
         viewModelScope.launch {
             if (!actualState.isRequestInProgress) {
-                runCatching {
-                    registerWithEmailAndPassword(
-                        email = actualState.email,
-                        password = actualState.password,
+                val state = actualState
+                if (areLoginInputsValid(
+                        email = state.email,
+                        password = state.password,
                     )
-                }.onSuccess {
-                    onNavigateToHome()
-                }.onFailure {
-                    ensureActive()
-                    it.printStackTrace()
+                ) {
+                    updateState {
+                        copy(
+                            isRequestInProgress = true,
+                            showErrorIfAny = false,
+                        )
+                    }
+                    runCatching {
+                        request(
+                            state.email,
+                            state.password,
+                        )
+                    }.onSuccess {
+                        onNavigateToHome()
+                    }.onFailure {
+                        ensureActive()
+                        it.printStackTrace()
+                        updateState {
+                            copy(isRequestInProgress = false)
+                        }
+                    }
+                } else {
+                    updateState {
+                        copy(showErrorIfAny = true)
+                    }
                 }
             }
         }

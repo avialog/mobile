@@ -13,6 +13,7 @@ import domain.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
 import ui.screens.home.HomeComponent
+import ui.screens.login.AreLoginInputsValid
 import ui.screens.login.LoginComponent
 
 class RootComponent(
@@ -38,6 +39,7 @@ class RootComponent(
                 val loginWithEmailAndPassword: LoginWithEmailAndPassword by di.instance()
                 val registerWithEmailAndPassword: RegisterWithEmailAndPassword by di.instance()
                 val isUserLoggerIn: IsUserLoggedIn by di.instance()
+                val areLoginInputsValid: AreLoginInputsValid by di.instance()
 
                 Child.Login(
                     LoginComponent(
@@ -48,6 +50,7 @@ class RootComponent(
                         loginWithEmailAndPassword = loginWithEmailAndPassword,
                         registerWithEmailAndPassword = registerWithEmailAndPassword,
                         isUserLoggedIn = isUserLoggerIn,
+                        areLoginInputsValid = areLoginInputsValid,
                     ),
                 )
             }
