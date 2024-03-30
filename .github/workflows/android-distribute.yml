@@ -7,7 +7,7 @@ on:
     branches: [ '*' ]
 
 jobs:
-  unit:
+  distribute:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
       - name: Distribute app
         uses: wzieba/Firebase-Distribution-Github-Action@v1.5.1
         with:
-          appId: ${{secrets.FIREBASE_APP_ID}}
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
+          serviceCredentialsFileContent: ${{secrets.CREDENTIAL_FILE_CONTENT}}
           groups: testers
           file: composeApp/build/outputs/bundle/release/composeApp-release.aab
