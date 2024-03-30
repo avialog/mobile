@@ -73,7 +73,7 @@ android {
         applicationId = "com.pawlowski.avialog"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = appVersionCode
+        versionCode = appVersionCode.toInt()
         versionName = "1.0"
     }
     packaging {
