@@ -1,4 +1,5 @@
 import java.io.FileInputStream
+import java.util.Date
 import java.util.Properties
 
 plugins {
@@ -58,6 +59,8 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val appVersionCode = (((Date().time / 1000) - 1451606400) / 10)
+
 android {
     namespace = "com.pawlowski.avialog"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -70,7 +73,7 @@ android {
         applicationId = "com.pawlowski.avialog"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
+        versionCode = appVersionCode.toInt()
         versionName = "1.0"
     }
     packaging {
