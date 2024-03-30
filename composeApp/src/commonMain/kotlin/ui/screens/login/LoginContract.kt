@@ -12,6 +12,8 @@ sealed interface LoginEvent {
 
     data object RegisterClick : LoginEvent
 
+    data object ForgotPasswordClick : LoginEvent
+
     data class EmailChange(val email: String) : LoginEvent
 
     data class PasswordChange(val password: String) : LoginEvent

@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.kodein.di.framework.compose)
             implementation(libs.kotlinx.atomicfu)
             implementation(libs.firebase.auth)
+            implementation(libs.font.awesome)
         }
     }
 }
@@ -96,6 +97,12 @@ android {
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
         }
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

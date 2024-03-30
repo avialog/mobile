@@ -57,12 +57,17 @@ class LoginComponent(
                     copy(password = event.password)
                 }
             }
+
+            LoginEvent.ForgotPasswordClick -> {}
         }
     }
 
     private fun onLoginClick() {
         viewModelScope.launch {
             if (!actualState.isRequestInProgress) {
+                updateState {
+                    copy(isRequestInProgress = true)
+                }
                 runCatching {
                     loginWithEmailAndPassword(
                         email = actualState.email,
@@ -73,6 +78,9 @@ class LoginComponent(
                 }.onFailure {
                     ensureActive()
                     it.printStackTrace()
+                    updateState {
+                        copy(isRequestInProgress = false)
+                    }
                 }
             }
         }
