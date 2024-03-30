@@ -59,7 +59,7 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
-val versionCode = (((Date().time / 1000) - 1451606400) / 10)
+val appVersionCode = (((Date().time / 1000) - 1451606400) / 10)
 
 android {
     namespace = "com.pawlowski.avialog"
@@ -73,7 +73,7 @@ android {
         applicationId = "com.pawlowski.avialog"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = versionCode
+        versionCode = appVersionCode
         versionName = "1.0"
     }
     packaging {
