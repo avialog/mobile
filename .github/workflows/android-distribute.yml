@@ -1,11 +1,15 @@
 name: Android Distribute
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_notes:
-        description: 'Release notes'
-        required: true
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+#  workflow_dispatch:
+#    inputs:
+#      release_notes:
+#        description: 'Release notes'
+#        required: true
 
 
 jobs:
