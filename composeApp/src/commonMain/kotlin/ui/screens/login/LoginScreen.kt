@@ -3,10 +3,13 @@ package ui.screens.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -51,7 +54,9 @@ fun LoginScreen(
             verticalArrangement = Arrangement.spacedBy(space = 24.dp),
             modifier =
                 Modifier
+                    .imePadding()
                     .fillMaxWidth()
+                    .verticalScroll(state = rememberScrollState())
                     .padding(horizontal = 16.dp)
                     .padding(top = 30.dp),
         ) {
