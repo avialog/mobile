@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.decompose)
+            implementation(platform("com.google.firebase:firebase-bom:30.0.1"))
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -110,6 +111,6 @@ android {
     }
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
-        implementation("com.google.firebase:firebase-common-ktx:20.3.3")
+        implementation("com.google.firebase:firebase-common-ktx:20.4.3")
     }
 }
