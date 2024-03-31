@@ -4,8 +4,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceCurrent
+import data.repository.auth.IAuthRepository
 import di.di
 import domain.IsUserLoggedIn
 import domain.LoginWithEmailAndPassword
@@ -56,13 +56,12 @@ class RootComponent(
             }
 
             Configuration.Home -> {
+                val authRepository by di.instance<IAuthRepository>()
                 Child.Home(
                     component =
                         HomeComponent(
                             componentContext = context,
-                            onNavigateToLogin = {
-                                navigation.pop()
-                            },
+                            authRepository = authRepository,
                         ),
                 )
             }
