@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "643703908959",
+    "project_id": "avialog-aa2c9",
+    "storage_bucket": "avialog-aa2c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643703908959:android:c4562be080eeda1df9c9ea",
+        "android_client_info": {
+          "package_name": "com.pawlowski.avialog"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHxfynUMMtjoZhtaZKgTXzHnh0b5Pam3E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
