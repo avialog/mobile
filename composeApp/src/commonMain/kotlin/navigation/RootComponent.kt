@@ -2,7 +2,6 @@ package navigation
 
 import ILogger
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceCurrent
@@ -13,14 +12,16 @@ import domain.LoginWithEmailAndPassword
 import domain.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
-import ui.screens.home.HomeComponent
+import ui.screens.carrier.CarrierComponent
+import ui.screens.flights.FlightsComponent
 import ui.screens.login.AreLoginInputsValid
 import ui.screens.login.LoginComponent
+import ui.screens.profile.ProfileComponent
 
 class RootComponent(
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
-    private val navigation = StackNavigation<Configuration>()
+    val navigation = StackNavigation<Configuration>()
     val childStack =
         childStack(
             source = navigation,
@@ -30,7 +31,6 @@ class RootComponent(
             childFactory = ::createChild,
         )
 
-    @OptIn(ExperimentalDecomposeApi::class)
     private fun createChild(
         config: Configuration,
         context: ComponentContext,
@@ -47,7 +47,7 @@ class RootComponent(
                     LoginComponent(
                         componentContext = context,
                         onNavigateToHome = {
-                            navigation.replaceCurrent(Configuration.Home)
+                            navigation.replaceCurrent(Configuration.Flights)
                         },
                         loginWithEmailAndPassword = loginWithEmailAndPassword,
                         registerWithEmailAndPassword = registerWithEmailAndPassword,
@@ -58,13 +58,30 @@ class RootComponent(
                 )
             }
 
-            Configuration.Home -> {
+            Configuration.Flights -> {
                 val authRepository by di.instance<IAuthRepository>()
-                Child.Home(
+                Child.Flights(
                     component =
-                        HomeComponent(
+                        FlightsComponent(
                             componentContext = context,
                             authRepository = authRepository,
+                        ),
+                )
+            }
+
+            Configuration.Carrier -> {
+                Child.Carrier(
+                    component =
+                        CarrierComponent(
+                            componentContext = context,
+                        ),
+                )
+            }
+            Configuration.Profile -> {
+                Child.Profile(
+                    component =
+                        ProfileComponent(
+                            componentContext = context,
                         ),
                 )
             }
@@ -74,7 +91,11 @@ class RootComponent(
     sealed class Child {
         data class Login(val component: LoginComponent) : Child()
 
-        data class Home(val component: HomeComponent) : Child()
+        data class Flights(val component: FlightsComponent) : Child()
+
+        data class Profile(val component: ProfileComponent) : Child()
+
+        data class Carrier(val component: CarrierComponent) : Child()
     }
 
     @Serializable
@@ -83,6 +104,12 @@ class RootComponent(
         data object Login : Configuration()
 
         @Serializable
-        data object Home : Configuration()
+        data object Flights : Configuration()
+
+        @Serializable
+        data object Profile : Configuration()
+
+        @Serializable
+        data object Carrier : Configuration()
     }
 }

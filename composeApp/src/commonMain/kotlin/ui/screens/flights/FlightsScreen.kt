@@ -1,4 +1,4 @@
-package ui.screens.home
+package ui.screens.flights
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,9 +14,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(
-    state: HomeState,
-    onNewEvent: (HomeEvent) -> Unit,
+fun FlightsScreen(
+    state: FlightsState,
+    onNewEvent: (FlightsEvent) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
