@@ -2,8 +2,11 @@ package navigation
 
 import ILogger
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.navigate
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
@@ -16,6 +19,7 @@ import ui.screens.carrier.CarrierComponent
 import ui.screens.flights.FlightsComponent
 import ui.screens.login.AreLoginInputsValid
 import ui.screens.login.LoginComponent
+import ui.screens.onboarding.OnboardingComponent
 import ui.screens.profile.ProfileComponent
 
 class RootComponent(
@@ -26,11 +30,12 @@ class RootComponent(
         childStack(
             source = navigation,
             serializer = Configuration.serializer(),
-            initialConfiguration = Configuration.Login,
+            initialConfiguration = Configuration.Onboarding,
             handleBackButton = true,
             childFactory = ::createChild,
         )
 
+    @OptIn(ExperimentalDecomposeApi::class)
     private fun createChild(
         config: Configuration,
         context: ComponentContext,
@@ -39,7 +44,6 @@ class RootComponent(
             Configuration.Login -> {
                 val loginWithEmailAndPassword: LoginWithEmailAndPassword by di.instance()
                 val registerWithEmailAndPassword: RegisterWithEmailAndPassword by di.instance()
-                val isUserLoggerIn: IsUserLoggedIn by di.instance()
                 val areLoginInputsValid: AreLoginInputsValid by di.instance()
                 val logger: ILogger by di.instance()
 
@@ -47,11 +51,12 @@ class RootComponent(
                     LoginComponent(
                         componentContext = context,
                         onNavigateToHome = {
-                            navigation.replaceCurrent(Configuration.Flights)
+                            navigation.navigate { _ ->
+                                listOf(Configuration.Flights)
+                            }
                         },
                         loginWithEmailAndPassword = loginWithEmailAndPassword,
                         registerWithEmailAndPassword = registerWithEmailAndPassword,
-                        isUserLoggedIn = isUserLoggerIn,
                         areLoginInputsValid = areLoginInputsValid,
                         logger = logger,
                     ),
@@ -85,6 +90,24 @@ class RootComponent(
                         ),
                 )
             }
+
+            Configuration.Onboarding -> {
+                val isUserLoggerIn: IsUserLoggedIn by di.instance()
+
+                Child.Onboarding(
+                    component =
+                        OnboardingComponent(
+                            componentContext = context,
+                            onNavigateToHome = {
+                                navigation.replaceCurrent(Configuration.Flights)
+                            },
+                            isUserLoggedIn = isUserLoggerIn,
+                            onNavigateToLogin = {
+                                navigation.pushNew(Configuration.Login)
+                            },
+                        ),
+                )
+            }
         }
     }
 
@@ -96,6 +119,8 @@ class RootComponent(
         data class Profile(val component: ProfileComponent) : Child()
 
         data class Carrier(val component: CarrierComponent) : Child()
+
+        data class Onboarding(val component: OnboardingComponent) : Child()
     }
 
     @Serializable
@@ -111,5 +136,8 @@ class RootComponent(
 
         @Serializable
         data object Carrier : Configuration()
+
+        @Serializable
+        data object Onboarding : Configuration()
     }
 }

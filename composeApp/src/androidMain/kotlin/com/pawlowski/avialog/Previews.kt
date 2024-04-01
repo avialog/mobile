@@ -15,9 +15,8 @@ private fun LoginScreenPreview() {
             LoginState(
                 email = "",
                 password = "",
-                showFullScreenLoader = false,
                 isRequestInProgress = true,
-                showErrorIfAny = true
+                showErrorIfAny = true,
             ),
         onNewEvent = {
         },

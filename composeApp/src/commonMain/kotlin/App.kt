@@ -28,6 +28,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import ui.screens.carrier.CarrierDestination
 import ui.screens.flights.FlightsDestination
 import ui.screens.login.LoginDestination
+import ui.screens.onboarding.OnboardingDestination
 import ui.screens.profile.ProfileDestination
 import kotlin.reflect.KClass
 
@@ -47,6 +48,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.Flights -> FlightsDestination(flightsComponent = instance.component)
                     is RootComponent.Child.Carrier -> CarrierDestination(carrierComponent = instance.component)
                     is RootComponent.Child.Profile -> ProfileDestination(profileComponent = instance.component)
+                    is RootComponent.Child.Onboarding -> OnboardingDestination(onboardingComponent = instance.component)
                 }
             }
             AvialogBottomNavigation(

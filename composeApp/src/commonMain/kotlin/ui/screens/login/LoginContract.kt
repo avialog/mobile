@@ -4,7 +4,6 @@ data class LoginState(
     val email: String,
     val password: String,
     val isRequestInProgress: Boolean,
-    val showFullScreenLoader: Boolean,
     val showErrorIfAny: Boolean,
 )
 
