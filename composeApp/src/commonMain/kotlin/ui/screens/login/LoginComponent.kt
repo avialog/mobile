@@ -1,11 +1,14 @@
 package ui.screens.login
 
 import BaseMviViewModel
+import ILogger
 import com.arkivanov.decompose.ComponentContext
 import domain.IsUserLoggedIn
 import domain.LoginWithEmailAndPassword
 import domain.RegisterWithEmailAndPassword
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class LoginComponent(
@@ -14,6 +17,7 @@ class LoginComponent(
     private val registerWithEmailAndPassword: RegisterWithEmailAndPassword,
     private val isUserLoggedIn: IsUserLoggedIn,
     private val areLoginInputsValid: AreLoginInputsValid,
+    private val logger: ILogger,
     private val onNavigateToHome: () -> Unit,
 ) :
     BaseMviViewModel<LoginState, LoginEvent>(
@@ -27,6 +31,9 @@ class LoginComponent(
                     showErrorIfAny = false,
                 ),
         ) {
+    private val errorNotificationChannel = Channel<String>(Channel.UNLIMITED)
+    val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
+
     override fun initialised() {
         viewModelScope.launch {
             if (isUserLoggedIn()) {
@@ -106,7 +113,8 @@ class LoginComponent(
                         onNavigateToHome()
                     }.onFailure {
                         ensureActive()
-                        it.printStackTrace()
+                        logger.w(it)
+                        errorNotificationChannel.send("Something went wrong!")
                         updateState {
                             copy(isRequestInProgress = false)
                         }

@@ -1,5 +1,7 @@
 package di
 
+import ILogger
+import LoggerDebug
 import data.repository.auth.AuthRepository
 import data.repository.auth.IAuthRepository
 import dev.gitlive.firebase.Firebase
@@ -41,5 +43,8 @@ val di =
         }
         bindProvider<AreLoginInputsValid> {
             AreLoginInputsValid()
+        }
+        bindProvider<ILogger> {
+            LoggerDebug()
         }
     }

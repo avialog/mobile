@@ -1,5 +1,6 @@
 package navigation
 
+import ILogger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -40,6 +41,7 @@ class RootComponent(
                 val registerWithEmailAndPassword: RegisterWithEmailAndPassword by di.instance()
                 val isUserLoggerIn: IsUserLoggedIn by di.instance()
                 val areLoginInputsValid: AreLoginInputsValid by di.instance()
+                val logger: ILogger by di.instance()
 
                 Child.Login(
                     LoginComponent(
@@ -51,6 +53,7 @@ class RootComponent(
                         registerWithEmailAndPassword = registerWithEmailAndPassword,
                         isUserLoggedIn = isUserLoggerIn,
                         areLoginInputsValid = areLoginInputsValid,
+                        logger = logger,
                     ),
                 )
             }
