@@ -39,55 +39,50 @@ import compose.icons.fontawesomeicons.regular.Eye
 import compose.icons.fontawesomeicons.regular.EyeSlash
 import ui.components.InputWithSupportingText
 import ui.components.Loader
-import ui.components.LoaderFullScreen
 
 @Composable
 fun LoginScreen(
     state: LoginState,
     onNewEvent: (LoginEvent) -> Unit,
 ) {
-    if (state.showFullScreenLoader) {
-        LoaderFullScreen()
-    } else {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(space = 24.dp),
-            modifier =
-                Modifier
-                    .imePadding()
-                    .fillMaxWidth()
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 30.dp),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(space = 24.dp),
+        modifier =
+            Modifier
+                .imePadding()
+                .fillMaxWidth()
+                .verticalScroll(state = rememberScrollState())
+                .padding(horizontal = 16.dp)
+                .padding(top = 30.dp),
+    ) {
+        Headers()
+        Inputs(
+            email = state.email,
+            password = state.password,
+            onNewEvent = onNewEvent,
+            showErrorIfAny = state.showErrorIfAny,
+        )
+        TextButton(
+            onClick = {
+                onNewEvent(LoginEvent.ForgotPasswordClick)
+            },
+            modifier = Modifier.align(Alignment.End),
         ) {
-            Headers()
-            Inputs(
-                email = state.email,
-                password = state.password,
-                onNewEvent = onNewEvent,
-                showErrorIfAny = state.showErrorIfAny,
-            )
-            TextButton(
-                onClick = {
-                    onNewEvent(LoginEvent.ForgotPasswordClick)
-                },
-                modifier = Modifier.align(Alignment.End),
-            ) {
-                Text(
-                    text = "Forgot password",
-                    style =
-                        TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight(600),
-                            color = Color(0xFFFB344F),
-                        ),
-                )
-            }
-            Buttons(
-                isRequestInProgress = state.isRequestInProgress,
-                onNewEvent = onNewEvent,
+            Text(
+                text = "Forgot password",
+                style =
+                    TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight(600),
+                        color = Color(0xFFFB344F),
+                    ),
             )
         }
+        Buttons(
+            isRequestInProgress = state.isRequestInProgress,
+            onNewEvent = onNewEvent,
+        )
     }
 }
 

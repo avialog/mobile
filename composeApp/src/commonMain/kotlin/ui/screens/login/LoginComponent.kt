@@ -3,7 +3,6 @@ package ui.screens.login
 import BaseMviViewModel
 import ILogger
 import com.arkivanov.decompose.ComponentContext
-import domain.IsUserLoggedIn
 import domain.LoginWithEmailAndPassword
 import domain.RegisterWithEmailAndPassword
 import kotlinx.coroutines.channels.Channel
@@ -15,7 +14,6 @@ class LoginComponent(
     componentContext: ComponentContext,
     private val loginWithEmailAndPassword: LoginWithEmailAndPassword,
     private val registerWithEmailAndPassword: RegisterWithEmailAndPassword,
-    private val isUserLoggedIn: IsUserLoggedIn,
     private val areLoginInputsValid: AreLoginInputsValid,
     private val logger: ILogger,
     private val onNavigateToHome: () -> Unit,
@@ -27,7 +25,6 @@ class LoginComponent(
                     email = "",
                     password = "",
                     isRequestInProgress = false,
-                    showFullScreenLoader = true,
                     showErrorIfAny = false,
                 ),
         ) {
@@ -35,15 +32,6 @@ class LoginComponent(
     val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
 
     override fun initialised() {
-        viewModelScope.launch {
-            if (isUserLoggedIn()) {
-                onNavigateToHome()
-            } else {
-                updateState {
-                    copy(showFullScreenLoader = false)
-                }
-            }
-        }
     }
 
     override fun onNewEvent(event: LoginEvent) {
