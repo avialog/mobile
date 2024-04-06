@@ -37,6 +37,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.decompose)
             implementation(platform("com.google.firebase:firebase-bom:30.0.1"))
+
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -53,6 +55,16 @@ kotlin {
             implementation(libs.kotlinx.atomicfu)
             implementation(libs.firebase.auth)
             implementation(libs.font.awesome)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.encoding)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

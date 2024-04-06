@@ -10,9 +10,10 @@ import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
-import domain.IsUserLoggedIn
-import domain.LoginWithEmailAndPassword
-import domain.RegisterWithEmailAndPassword
+import domain.useCase.GetProfile
+import domain.useCase.IsUserLoggedIn
+import domain.useCase.LoginWithEmailAndPassword
+import domain.useCase.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
 import ui.screens.carrier.CarrierComponent
@@ -83,10 +84,12 @@ class RootComponent(
                 )
             }
             Configuration.Profile -> {
+                val getProfile: GetProfile by di.instance()
                 Child.Profile(
                     component =
                         ProfileComponent(
                             componentContext = context,
+                            getProfile = getProfile,
                         ),
                 )
             }

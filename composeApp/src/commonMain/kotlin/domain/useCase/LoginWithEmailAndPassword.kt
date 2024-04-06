@@ -1,15 +1,15 @@
-package domain
+package domain.useCase
 
 import data.repository.auth.IAuthRepository
 
-class RegisterWithEmailAndPassword(
+class LoginWithEmailAndPassword(
     private val authRepository: IAuthRepository,
 ) {
     suspend operator fun invoke(
         email: String,
         password: String,
     ) {
-        authRepository.registerWithEmailAndPassword(
+        authRepository.loginWithEmailAndPassword(
             email = email,
             password = password,
         )
