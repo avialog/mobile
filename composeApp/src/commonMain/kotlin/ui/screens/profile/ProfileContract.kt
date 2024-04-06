@@ -1,7 +1,10 @@
 package ui.screens.profile
 
+import Resource
+import domain.model.Profile
+
 data class ProfileState(
-    val isLoading: Boolean,
+    val profileResource: Resource<Profile>,
 )
 
 sealed interface ProfileEvent

@@ -85,10 +85,12 @@ class RootComponent(
             }
             Configuration.Profile -> {
                 val getProfile: GetProfile by di.instance()
+                val logger: ILogger by di.instance()
                 Child.Profile(
                     component =
                         ProfileComponent(
                             componentContext = context,
+                            logger = logger,
                             getProfile = getProfile,
                         ),
                 )

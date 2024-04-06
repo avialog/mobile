@@ -1,27 +1,38 @@
 package ui.screens.profile
 
 import BaseMviViewModel
+import ILogger
+import Resource
+import RetrySharedFlow
 import com.arkivanov.decompose.ComponentContext
 import domain.useCase.GetProfile
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import resourceFlowWithRetrying
 
 class ProfileComponent(
     componentContext: ComponentContext,
+    private val logger: ILogger,
     private val getProfile: GetProfile,
 ) : BaseMviViewModel<ProfileState, ProfileEvent>(
         componentContext = componentContext,
-        initialState = ProfileState(isLoading = true),
+        initialState =
+            ProfileState(
+                profileResource = Resource.Loading,
+            ),
     ) {
+    private val retrySharedFlow = RetrySharedFlow()
+
     override fun initialised() {
         viewModelScope.launch {
-            runCatching {
+            resourceFlowWithRetrying(
+                logger = logger,
+                retrySharedFlow = retrySharedFlow,
+            ) {
                 getProfile()
-            }.onFailure {
-                ensureActive()
-                it.printStackTrace()
-            }.onSuccess {
-                println("Success $it")
+            }.collect {
+                updateState {
+                    copy(profileResource = it)
+                }
             }
         }
     }
