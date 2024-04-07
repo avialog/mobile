@@ -38,5 +38,13 @@ class ProfileComponent(
     }
 
     override fun onNewEvent(event: ProfileEvent) {
+        when (event) {
+            ProfileEvent.ContactsClick -> {}
+            ProfileEvent.LogOutClick -> {}
+            ProfileEvent.PasswordClick -> {}
+            ProfileEvent.PlanesClick -> {}
+            ProfileEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
+            ProfileEvent.UserDataClick -> {}
+        }
     }
 }

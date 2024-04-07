@@ -7,4 +7,16 @@ data class ProfileState(
     val profileResource: Resource<Profile>,
 )
 
-sealed interface ProfileEvent
+sealed interface ProfileEvent {
+    data object PlanesClick : ProfileEvent
+
+    data object ContactsClick : ProfileEvent
+
+    data object UserDataClick : ProfileEvent
+
+    data object PasswordClick : ProfileEvent
+
+    data object LogOutClick : ProfileEvent
+
+    data object RetryClick : ProfileEvent
+}
