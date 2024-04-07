@@ -242,7 +242,7 @@ private fun SettingsSection(onNewEvent: (ProfileEvent) -> Unit) {
             icon = FontAwesomeIcons.Solid.Lock,
             title = "Hasło",
             onClick = {
-                onNewEvent(ProfileEvent.ContactsClick)
+                onNewEvent(ProfileEvent.PasswordClick)
             },
         )
     }
