@@ -3,8 +3,8 @@ package ui.screens.login
 import BaseMviViewModel
 import ILogger
 import com.arkivanov.decompose.ComponentContext
-import domain.LoginWithEmailAndPassword
-import domain.RegisterWithEmailAndPassword
+import domain.useCase.LoginWithEmailAndPassword
+import domain.useCase.RegisterWithEmailAndPassword
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.receiveAsFlow

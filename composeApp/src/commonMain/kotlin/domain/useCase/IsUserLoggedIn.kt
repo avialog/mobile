@@ -1,4 +1,4 @@
-package domain
+package domain.useCase
 
 import data.repository.auth.IAuthRepository
 

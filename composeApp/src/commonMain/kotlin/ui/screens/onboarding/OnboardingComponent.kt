@@ -2,7 +2,7 @@ package ui.screens.onboarding
 
 import BaseMviViewModel
 import com.arkivanov.decompose.ComponentContext
-import domain.IsUserLoggedIn
+import domain.useCase.IsUserLoggedIn
 import kotlinx.coroutines.launch
 
 class OnboardingComponent(

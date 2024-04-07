@@ -14,4 +14,6 @@ interface IAuthRepository {
     )
 
     suspend fun isUserLoggedIn(): Boolean
+
+    suspend fun logOut()
 }
