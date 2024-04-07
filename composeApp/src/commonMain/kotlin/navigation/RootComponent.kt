@@ -6,11 +6,13 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.navigate
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
+import domain.useCase.GetContacts
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
 import domain.useCase.LogOut
@@ -19,6 +21,7 @@ import domain.useCase.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
 import ui.screens.carrier.CarrierComponent
+import ui.screens.contacts.ContactsComponent
 import ui.screens.flights.FlightsComponent
 import ui.screens.login.AreLoginInputsValid
 import ui.screens.login.LoginComponent
@@ -99,6 +102,9 @@ class RootComponent(
                             onNavigateToLogin = {
                                 navigation.replaceAll(Configuration.Login)
                             },
+                            onNavigateToContacts = {
+                                navigation.pushNew(Configuration.Contacts)
+                            },
                         ),
                 )
             }
@@ -120,6 +126,23 @@ class RootComponent(
                         ),
                 )
             }
+
+            Configuration.Contacts -> {
+                val getContacts: GetContacts by di.instance()
+                val logger: ILogger by di.instance()
+
+                Child.Contacts(
+                    component =
+                        ContactsComponent(
+                            componentContext = context,
+                            getContacts = getContacts,
+                            logger = logger,
+                            onNavigateBack = {
+                                navigation.pop()
+                            },
+                        ),
+                )
+            }
         }
     }
 
@@ -133,6 +156,8 @@ class RootComponent(
         data class Carrier(val component: CarrierComponent) : Child()
 
         data class Onboarding(val component: OnboardingComponent) : Child()
+
+        data class Contacts(val component: ContactsComponent) : Child()
     }
 
     @Serializable
@@ -151,5 +176,8 @@ class RootComponent(
 
         @Serializable
         data object Onboarding : Configuration()
+
+        @Serializable
+        data object Contacts : Configuration()
     }
 }

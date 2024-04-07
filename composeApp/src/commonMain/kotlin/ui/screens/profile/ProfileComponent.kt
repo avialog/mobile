@@ -14,6 +14,7 @@ import resourceFlowWithRetrying
 class ProfileComponent(
     componentContext: ComponentContext,
     private val onNavigateToLogin: () -> Unit,
+    private val onNavigateToContacts: () -> Unit,
     private val logger: ILogger,
     private val getProfile: GetProfile,
     private val logOut: LogOut,
@@ -44,7 +45,9 @@ class ProfileComponent(
 
     override fun onNewEvent(event: ProfileEvent) {
         when (event) {
-            ProfileEvent.ContactsClick -> {}
+            ProfileEvent.ContactsClick -> {
+                onNavigateToContacts()
+            }
             ProfileEvent.LogOutClick -> {
                 if (!actualState.isLogOutInProgress) {
                     updateState {
