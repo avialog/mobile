@@ -11,6 +11,7 @@ import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
+import domain.useCase.LogOut
 import domain.useCase.LoginWithEmailAndPassword
 import domain.useCase.RegisterWithEmailAndPassword
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -76,5 +77,10 @@ val di =
                 ignoreUnknownKeys = true
                 explicitNulls = false
             }
+        }
+        bindProvider {
+            LogOut(
+                authRepository = instance(),
+            )
         }
     }

@@ -41,8 +41,9 @@ private fun ProfileScreenPreview() {
                     lastName = "Kowalski",
                     avatarUrl = null,
                     email = "kowalski@gmail.com",
-                )
-            )
+                ),
+            ),
+            isLogOutInProgress = false,
         ),
         onNewEvent = {
         },

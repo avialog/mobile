@@ -65,6 +65,7 @@ fun ProfileScreen(
             onClick = {
                 onNewEvent(ProfileEvent.LogOutClick)
             },
+            enabled = !state.isLogOutInProgress,
         ) {
             Text(text = "Wyloguj się")
         }

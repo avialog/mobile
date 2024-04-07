@@ -31,4 +31,8 @@ class AuthRepository(
     }
 
     override suspend fun isUserLoggedIn(): Boolean = firebaseAuth.currentUser != null
+
+    override suspend fun logOut() {
+        firebaseAuth.signOut()
+    }
 }

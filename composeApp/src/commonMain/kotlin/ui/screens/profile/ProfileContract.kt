@@ -5,6 +5,7 @@ import domain.model.Profile
 
 data class ProfileState(
     val profileResource: Resource<Profile>,
+    val isLogOutInProgress: Boolean,
 )
 
 sealed interface ProfileEvent {
