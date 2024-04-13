@@ -8,6 +8,7 @@ data class AddContactState(
     val companyName: String,
     val notes: String,
     val isRequestInProgress: Boolean,
+    val showErrorIfAny: Boolean,
 )
 
 sealed interface AddContactEvent {

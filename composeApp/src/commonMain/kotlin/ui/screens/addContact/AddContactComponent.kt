@@ -4,7 +4,9 @@ import BaseMviViewModel
 import ILogger
 import com.arkivanov.decompose.ComponentContext
 import domain.useCase.AddContact
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class AddContactComponent(
@@ -24,8 +26,12 @@ class AddContactComponent(
                 companyName = "",
                 notes = "",
                 isRequestInProgress = false,
+                showErrorIfAny = false,
             ),
     ) {
+    private val errorNotificationChannel = Channel<Unit>(Channel.UNLIMITED)
+    val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
+
     override fun onNewEvent(event: AddContactEvent) {
         when (event) {
             AddContactEvent.BackClick -> onNavigateBack()
@@ -61,6 +67,12 @@ class AddContactComponent(
             }
 
             AddContactEvent.SaveClick -> {
+                if (actualState.name.isBlank()) {
+                    updateState {
+                        copy(showErrorIfAny = true)
+                    }
+                    return
+                }
                 updateState {
                     copy(isRequestInProgress = true)
                 }
@@ -69,16 +81,17 @@ class AddContactComponent(
                     runCatching {
                         addContact(
                             firstName = state.name,
-                            avatarUrl = "",
-                            company = state.companyName,
-                            emailAddress = state.email,
-                            lastName = state.surname,
-                            note = state.notes,
-                            phone = state.phoneNumber,
+                            avatarUrl = null,
+                            company = state.companyName.ifBlank { null },
+                            emailAddress = state.email.ifBlank { null },
+                            lastName = state.surname.ifBlank { null },
+                            note = state.notes.ifBlank { null },
+                            phone = state.phoneNumber.ifBlank { null },
                         )
                     }.onFailure {
                         ensureActive()
                         logger.w(it)
+                        errorNotificationChannel.send(Unit)
                     }.onSuccess {
                         onNavigateBackWithRefreshing()
                     }

@@ -33,6 +33,7 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Briefcase
 import compose.icons.fontawesomeicons.solid.StickyNote
+import ui.components.InputWithSupportingText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,17 +122,25 @@ private fun InputFields(
         verticalArrangement = Arrangement.spacedBy(space = 24.dp),
         modifier = modifier.verticalScroll(state = rememberScrollState()),
     ) {
-        OutlinedTextField(
-            value = state.name,
-            onValueChange = {
-                onNewEvent(AddContactEvent.NameChange(it))
+        val showNameError = state.name.isEmpty() && state.showErrorIfAny
+        InputWithSupportingText(
+            input = {
+                OutlinedTextField(
+                    value = state.name,
+                    onValueChange = {
+                        onNewEvent(AddContactEvent.NameChange(it))
+                    },
+                    singleLine = true,
+                    label = {
+                        Text(text = "Imię*")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
             },
-            singleLine = true,
-            label = {
-                Text(text = "Imię")
-            },
-            modifier = Modifier.fillMaxWidth(),
+            isError = showNameError,
+            supportingText = "Imię jest wymagane!".takeIf { showNameError },
         )
+
         OutlinedTextField(
             value = state.surname,
             onValueChange = {
