@@ -1,25 +1,37 @@
 package ui.screens.contacts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,46 +47,66 @@ fun ContactsScreen(
     state: ContactsState,
     onNewEvent: (ContactsEvent) -> Unit,
 ) {
-    Column {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = "Kontakty",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge,
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Kontakty",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            onNewEvent(ContactsEvent.BackClick)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                },
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onNewEvent(ContactsEvent.AddContactClick)
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
                 )
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = {
-                        onNewEvent(ContactsEvent.BackClick)
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
+            }
+        },
+    ) { innerPadding ->
+        Column(
+            modifier =
+                Modifier.padding(paddingValues = innerPadding)
+                    .consumeWindowInsets(innerPadding),
+        ) {
+            when (state.contactsResource) {
+                is Resource.Error -> {
+                    ErrorItem(
+                        onRetryClick = {
+                            onNewEvent(ContactsEvent.RetryClick)
+                        },
                     )
                 }
-            },
-        )
-
-        when (state.contactsResource) {
-            is Resource.Error -> {
-                ErrorItem(
-                    onRetryClick = {
-                        onNewEvent(ContactsEvent.RetryClick)
-                    },
-                )
+                Resource.Loading -> {
+                    LoaderFullScreen()
+                }
+                is Resource.Success ->
+                    Content(
+                        contacts = state.contactsResource.data,
+                        onNewEvent = onNewEvent,
+                    )
             }
-            Resource.Loading -> {
-                LoaderFullScreen()
-            }
-            is Resource.Success ->
-                Content(
-                    contacts = state.contactsResource.data,
-                    onNewEvent = onNewEvent,
-                )
         }
     }
 }
@@ -96,9 +128,7 @@ private fun Content(
             contactList.forEach {
                 ContactItem(
                     contact = it,
-                    onClick = {
-                        onNewEvent(ContactsEvent.ContactClick(it))
-                    },
+                    onNewEvent = onNewEvent,
                 )
             }
         }
@@ -121,13 +151,16 @@ private fun CharacterSectionHeader(character: Char) {
 @Composable
 private fun ContactItem(
     contact: Contact,
-    onClick: () -> Unit,
+    onNewEvent: (ContactsEvent) -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             Modifier.fillMaxWidth()
+                .clickable {
+                    onNewEvent(ContactsEvent.ContactClick(contact = contact))
+                }
                 .padding(all = 16.dp),
     ) {
         Avatar(photoUrl = contact.avatarUrl)
@@ -135,7 +168,10 @@ private fun ContactItem(
             contact = contact,
             modifier = Modifier.weight(weight = 1f),
         )
-        MoreIconWithDropdown()
+        MoreIconWithDropdown(
+            contact = contact,
+            onNewEvent = onNewEvent,
+        )
     }
 }
 
@@ -171,11 +207,40 @@ private fun Avatar(photoUrl: String?) {
 }
 
 @Composable
-private fun MoreIconWithDropdown() {
-    IconButton(onClick = { }) {
-        Icon(
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = null,
-        )
+private fun MoreIconWithDropdown(
+    contact: Contact,
+    onNewEvent: (ContactsEvent) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(Icons.Default.MoreVert, contentDescription = null)
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text("Edytuj kontakt") },
+                onClick = { onNewEvent(ContactsEvent.EditContactClick(contact = contact)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = null,
+                    )
+                },
+            )
+            DropdownMenuItem(
+                text = { Text("Usuń kontakt") },
+                onClick = { onNewEvent(ContactsEvent.DeleteContactClick(contact = contact)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Delete,
+                        contentDescription = null,
+                    )
+                },
+            )
+        }
     }
 }

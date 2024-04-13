@@ -13,4 +13,10 @@ sealed interface ContactsEvent {
     data object RetryClick : ContactsEvent
 
     data class ContactClick(val contact: Contact) : ContactsEvent
+
+    data object AddContactClick : ContactsEvent
+
+    data class EditContactClick(val contact: Contact) : ContactsEvent
+
+    data class DeleteContactClick(val contact: Contact) : ContactsEvent
 }
