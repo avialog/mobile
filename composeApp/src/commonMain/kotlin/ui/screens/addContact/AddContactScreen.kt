@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,7 +28,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import compose.icons.FontAwesomeIcons
@@ -122,6 +128,8 @@ private fun InputFields(
         verticalArrangement = Arrangement.spacedBy(space = 24.dp),
         modifier = modifier.verticalScroll(state = rememberScrollState()),
     ) {
+        val focusManager = LocalFocusManager.current
+
         val showNameError = state.name.isBlank() && state.showErrorIfAny
         InputWithSupportingText(
             input = {
@@ -134,6 +142,13 @@ private fun InputFields(
                     label = {
                         Text(text = "Imię*")
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions =
+                        KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            },
+                        ),
                     modifier = Modifier.fillMaxWidth(),
                 )
             },
@@ -150,6 +165,13 @@ private fun InputFields(
             label = {
                 Text(text = "Nazwisko")
             },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                ),
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
@@ -167,6 +189,17 @@ private fun InputFields(
                     contentDescription = null,
                 )
             },
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Next,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                ),
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
@@ -184,6 +217,17 @@ private fun InputFields(
                     contentDescription = null,
                 )
             },
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                ),
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
@@ -202,6 +246,13 @@ private fun InputFields(
                     modifier = Modifier.size(size = 24.dp),
                 )
             },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                ),
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
@@ -219,6 +270,7 @@ private fun InputFields(
                     modifier = Modifier.size(size = 24.dp),
                 )
             },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             modifier =
                 Modifier.fillMaxWidth()
                     .heightIn(min = 140.dp),
