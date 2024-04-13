@@ -9,35 +9,41 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import domain.model.Contact
 import ui.components.ErrorItem
 import ui.components.LoaderFullScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactsScreen(
     state: ContactsState,
     onNewEvent: (ContactsEvent) -> Unit,
 ) {
     Column {
-        TopAppBar(
+        CenterAlignedTopAppBar(
             title = {
-                Text(text = "Kontakty")
+                Text(
+                    text = "Kontakty",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.titleLarge,
+                )
             },
             navigationIcon = {
                 IconButton(
@@ -51,8 +57,6 @@ fun ContactsScreen(
                     )
                 }
             },
-            backgroundColor = Color.White,
-            contentColor = Color.Black,
         )
 
         when (state.contactsResource) {
@@ -109,12 +113,7 @@ private fun CharacterSectionHeader(character: Char) {
     ) {
         Text(
             text = character.toString(),
-            style =
-                TextStyle(
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFF000000),
-                ),
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
@@ -151,22 +150,12 @@ private fun NameAndSurnameColumn(
     ) {
         Text(
             text = "${contact.firstName} ${contact.lastName ?: ""}",
-            style =
-                TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight(500),
-                    color = Color(0xFF1D1B20),
-                ),
+            style = MaterialTheme.typography.titleMedium,
         )
         contact.phone?.let {
             Text(
                 text = contact.phone,
-                style =
-                    TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF1D1B20),
-                    ),
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }

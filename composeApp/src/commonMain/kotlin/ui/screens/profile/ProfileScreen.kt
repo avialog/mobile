@@ -15,11 +15,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -213,7 +213,7 @@ private fun UserDataSection(onNewEvent: (ProfileEvent) -> Unit) {
                 onNewEvent(ProfileEvent.PlanesClick)
             },
         )
-        Divider()
+        HorizontalDivider()
         SectionItem(
             icon = FontAwesomeIcons.Solid.AddressBook,
             title = "Kontakty",
@@ -237,7 +237,7 @@ private fun SettingsSection(onNewEvent: (ProfileEvent) -> Unit) {
                 onNewEvent(ProfileEvent.PlanesClick)
             },
         )
-        Divider()
+        HorizontalDivider()
         SectionItem(
             icon = FontAwesomeIcons.Solid.Lock,
             title = "Hasło",
