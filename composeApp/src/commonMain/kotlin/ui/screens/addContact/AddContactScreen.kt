@@ -122,7 +122,7 @@ private fun InputFields(
         verticalArrangement = Arrangement.spacedBy(space = 24.dp),
         modifier = modifier.verticalScroll(state = rememberScrollState()),
     ) {
-        val showNameError = state.name.isEmpty() && state.showErrorIfAny
+        val showNameError = state.name.isBlank() && state.showErrorIfAny
         InputWithSupportingText(
             input = {
                 OutlinedTextField(

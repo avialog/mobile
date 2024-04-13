@@ -35,7 +35,7 @@ class ContactsComponent(
                 retrySharedFlow = retrySharedFlow,
                 logger = logger,
             ) {
-                getContacts().sortedBy { it.firstName }
+                getContacts().sortedBy { it.firstName.uppercase() }
             }.collect {
                 updateState {
                     copy(contactsResource = it)

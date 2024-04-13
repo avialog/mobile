@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -140,7 +142,7 @@ private fun Content(
     Column {
         val groupedContacts =
             remember(contacts) {
-                contacts.groupBy { it.firstName.first() }
+                contacts.groupBy { it.firstName.first().uppercase() }
             }
 
         LazyColumn {
@@ -155,12 +157,15 @@ private fun Content(
                     )
                 }
             }
+            item {
+                Spacer(modifier = Modifier.height(height = 48.dp))
+            }
         }
     }
 }
 
 @Composable
-private fun CharacterSectionHeader(character: Char) {
+private fun CharacterSectionHeader(character: String) {
     Box(
         contentAlignment = Alignment.Center,
         modifier =
@@ -174,7 +179,7 @@ private fun CharacterSectionHeader(character: Char) {
                 .padding(vertical = 8.dp),
     ) {
         Text(
-            text = character.toString(),
+            text = character,
             style = MaterialTheme.typography.titleLarge,
         )
     }

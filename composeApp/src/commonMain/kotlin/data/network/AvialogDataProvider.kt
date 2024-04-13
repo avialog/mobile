@@ -51,11 +51,11 @@ class AvialogDataProvider(
             body =
                 AddContactRequestDto(
                     avatarUrl = avatarUrl,
-                    company = company,
-                    emailAddress = emailAddress,
-                    firstName = firstName,
-                    lastName = lastName,
-                    note = note,
+                    company = company?.trim(),
+                    emailAddress = emailAddress?.trim(),
+                    firstName = firstName.trim(),
+                    lastName = lastName?.trim(),
+                    note = note?.trim(),
                     phone = phone,
                 ),
         )
