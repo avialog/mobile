@@ -1,10 +1,10 @@
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,6 +26,7 @@ import navigation.RootComponent
 import navigation.RootComponent.Configuration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import ui.screens.carrier.CarrierDestination
+import ui.screens.contacts.ContactsDestination
 import ui.screens.flights.FlightsDestination
 import ui.screens.login.LoginDestination
 import ui.screens.onboarding.OnboardingDestination
@@ -49,6 +50,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.Carrier -> CarrierDestination(carrierComponent = instance.component)
                     is RootComponent.Child.Profile -> ProfileDestination(profileComponent = instance.component)
                     is RootComponent.Child.Onboarding -> OnboardingDestination(onboardingComponent = instance.component)
+                    is RootComponent.Child.Contacts -> ContactsDestination(contactsComponent = instance.component)
                 }
             }
             AvialogBottomNavigation(
@@ -110,11 +112,11 @@ private fun AvialogBottomNavigation(
             it.isSelected(currentConfiguration = currentConfiguration())
         }
     ) {
-        BottomNavigation(
-            backgroundColor = Color(0xFFF3EDF7),
+        NavigationBar(
+            containerColor = Color(0xFFF3EDF7),
         ) {
             items.forEach {
-                BottomNavigationItem(
+                NavigationBarItem(
                     selected = it.isSelected(currentConfiguration = currentConfiguration()),
                     icon = {
                         Icon(

@@ -18,6 +18,13 @@ sealed class Resource<out T> {
 
 fun <T> Resource<T>.getDataOrNull() = (this as? Resource.Success)?.data
 
+inline fun <T, R> Resource<T>.mapIfSuccess(transformation: (T) -> R): Resource<R> =
+    when (this) {
+        is Resource.Success -> Resource.Success(transformation(data))
+        is Resource.Loading -> this
+        is Resource.Error -> this
+    }
+
 inline fun <T> resourceFlow(
     logger: ILogger,
     crossinline action: suspend () -> T,
