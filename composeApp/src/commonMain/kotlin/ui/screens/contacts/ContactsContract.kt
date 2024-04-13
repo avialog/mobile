@@ -5,6 +5,7 @@ import domain.model.Contact
 
 data class ContactsState(
     val contactsResource: Resource<List<Contact>>,
+    val isRequestInProgress: Boolean,
 )
 
 sealed interface ContactsEvent {

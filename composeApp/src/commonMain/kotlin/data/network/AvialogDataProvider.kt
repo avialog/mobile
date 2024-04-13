@@ -27,4 +27,11 @@ class AvialogDataProvider(
             url = "contacts",
             httpMethod = HttpMethod.Get,
         ).toDomain()
+
+    suspend fun deleteContact(contactId: Long) {
+        authorizedRequest<EmptyRequestDto, EmptyRequestDto>(
+            url = "contacts/$contactId",
+            httpMethod = HttpMethod.Delete,
+        )
+    }
 }

@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ContactResponseDto(
+    @SerialName("id") val id: Long,
     @SerialName("avatar_url") val avatarUrl: String?,
     @SerialName("company") val company: String?,
     @SerialName("email_address") val emailAddress: String?,

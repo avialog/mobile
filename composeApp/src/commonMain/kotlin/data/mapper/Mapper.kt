@@ -16,6 +16,7 @@ fun ProfileResponseDto.toDomain() =
 fun List<ContactResponseDto>.toDomain() =
     map {
         Contact(
+            id = it.id,
             avatarUrl = it.avatarUrl,
             company = it.company,
             emailAddress = it.emailAddress,

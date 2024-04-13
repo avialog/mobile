@@ -12,6 +12,7 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
+import domain.useCase.DeleteContact
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
@@ -129,6 +130,7 @@ class RootComponent(
 
             Configuration.Contacts -> {
                 val getContacts: GetContacts by di.instance()
+                val deleteContact: DeleteContact by di.instance()
                 val logger: ILogger by di.instance()
 
                 Child.Contacts(
@@ -137,6 +139,7 @@ class RootComponent(
                             componentContext = context,
                             getContacts = getContacts,
                             logger = logger,
+                            deleteContact = deleteContact,
                             onNavigateBack = {
                                 navigation.pop()
                             },

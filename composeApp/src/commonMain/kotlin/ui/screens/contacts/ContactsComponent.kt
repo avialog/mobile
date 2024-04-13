@@ -5,20 +5,25 @@ import ILogger
 import Resource
 import RetrySharedFlow
 import com.arkivanov.decompose.ComponentContext
+import domain.useCase.DeleteContact
 import domain.useCase.GetContacts
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import mapIfSuccess
 import resourceFlowWithRetrying
 
 class ContactsComponent(
     componentContext: ComponentContext,
     private val onNavigateBack: () -> Unit,
     private val getContacts: GetContacts,
+    private val deleteContact: DeleteContact,
     private val logger: ILogger,
 ) : BaseMviViewModel<ContactsState, ContactsEvent>(
         componentContext = componentContext,
         initialState =
             ContactsState(
                 contactsResource = Resource.Loading,
+                isRequestInProgress = false,
             ),
     ) {
     private val retrySharedFlow = RetrySharedFlow()
@@ -44,7 +49,31 @@ class ContactsComponent(
             ContactsEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
             is ContactsEvent.ContactClick -> {}
             ContactsEvent.AddContactClick -> {}
-            is ContactsEvent.DeleteContactClick -> {}
+            is ContactsEvent.DeleteContactClick -> {
+                updateState {
+                    copy(isRequestInProgress = true)
+                }
+                viewModelScope.launch {
+                    runCatching {
+                        deleteContact(contactId = event.contact.id)
+                    }.onFailure {
+                        ensureActive()
+                        logger.w(it)
+                    }.onSuccess {
+                        updateState {
+                            copy(
+                                contactsResource =
+                                    contactsResource.mapIfSuccess { contacts ->
+                                        contacts.filterNot { it.id == event.contact.id }
+                                    },
+                            )
+                        }
+                    }
+                    updateState {
+                        copy(isRequestInProgress = false)
+                    }
+                }
+            }
             is ContactsEvent.EditContactClick -> {}
         }
     }
