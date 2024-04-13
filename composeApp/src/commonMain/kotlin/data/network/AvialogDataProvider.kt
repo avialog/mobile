@@ -1,5 +1,6 @@
 package data.network
 
+import data.dto.request.AddContactRequestDto
 import data.dto.request.EmptyRequestDto
 import data.dto.response.ContactResponseDto
 import data.dto.response.ProfileResponseDto
@@ -32,6 +33,31 @@ class AvialogDataProvider(
         authorizedRequest<EmptyRequestDto, EmptyRequestDto>(
             url = "contacts/$contactId",
             httpMethod = HttpMethod.Delete,
+        )
+    }
+
+    suspend fun addContact(
+        avatarUrl: String?,
+        company: String?,
+        emailAddress: String?,
+        firstName: String,
+        lastName: String?,
+        note: String?,
+        phone: String?,
+    ) {
+        authorizedRequest<AddContactRequestDto, EmptyRequestDto>(
+            url = "contacts",
+            httpMethod = HttpMethod.Post,
+            body =
+                AddContactRequestDto(
+                    avatarUrl = avatarUrl,
+                    company = company,
+                    emailAddress = emailAddress,
+                    firstName = firstName,
+                    lastName = lastName,
+                    note = note,
+                    phone = phone,
+                ),
         )
     }
 }
