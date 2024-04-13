@@ -42,6 +42,7 @@ class ContactsComponent(
         when (event) {
             ContactsEvent.BackClick -> onNavigateBack()
             ContactsEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
+            is ContactsEvent.ContactClick -> {}
         }
     }
 }
