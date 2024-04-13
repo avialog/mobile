@@ -1,5 +1,6 @@
 package ui.screens.contacts
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import domain.model.Contact
@@ -47,7 +54,9 @@ fun ContactsScreen(
     state: ContactsState,
     onNewEvent: (ContactsEvent) -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -70,6 +79,7 @@ fun ContactsScreen(
                         )
                     }
                 },
+                scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
@@ -87,7 +97,8 @@ fun ContactsScreen(
     ) { innerPadding ->
         Column(
             modifier =
-                Modifier.padding(paddingValues = innerPadding)
+                Modifier
+                    .padding(paddingValues = innerPadding)
                     .consumeWindowInsets(innerPadding),
         ) {
             when (state.contactsResource) {
@@ -102,15 +113,21 @@ fun ContactsScreen(
                     LoaderFullScreen()
                 }
                 is Resource.Success ->
-                    Content(
-                        contacts = state.contactsResource.data,
-                        onNewEvent = onNewEvent,
-                    )
+                    Box {
+                        Content(
+                            contacts = state.contactsResource.data,
+                            onNewEvent = onNewEvent,
+                        )
+                        if (state.isRequestInProgress) {
+                            LoaderFullScreen(isOverlay = true)
+                        }
+                    }
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
     contacts: List<Contact>,
@@ -122,14 +139,17 @@ private fun Content(
                 contacts.groupBy { it.firstName.first() }
             }
 
-        groupedContacts.entries.forEach { (firstCharacter, contactList) ->
-            CharacterSectionHeader(character = firstCharacter)
-
-            contactList.forEach {
-                ContactItem(
-                    contact = it,
-                    onNewEvent = onNewEvent,
-                )
+        LazyColumn {
+            groupedContacts.entries.toList().forEach { (firstCharacter, contactList) ->
+                stickyHeader {
+                    CharacterSectionHeader(character = firstCharacter)
+                }
+                items(contactList) {
+                    ContactItem(
+                        contact = it,
+                        onNewEvent = onNewEvent,
+                    )
+                }
             }
         }
     }
@@ -139,7 +159,15 @@ private fun Content(
 private fun CharacterSectionHeader(character: Char) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .shadow(
+                    elevation = 1.dp,
+                    spotColor = Color.DarkGray,
+                    shape = RectangleShape,
+                )
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(vertical = 8.dp),
     ) {
         Text(
             text = character.toString(),
@@ -223,7 +251,10 @@ private fun MoreIconWithDropdown(
         ) {
             DropdownMenuItem(
                 text = { Text("Edytuj kontakt") },
-                onClick = { onNewEvent(ContactsEvent.EditContactClick(contact = contact)) },
+                onClick = {
+                    onNewEvent(ContactsEvent.EditContactClick(contact = contact))
+                    expanded = false
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Edit,
@@ -233,7 +264,10 @@ private fun MoreIconWithDropdown(
             )
             DropdownMenuItem(
                 text = { Text("Usuń kontakt") },
-                onClick = { onNewEvent(ContactsEvent.DeleteContactClick(contact = contact)) },
+                onClick = {
+                    onNewEvent(ContactsEvent.DeleteContactClick(contact = contact))
+                    expanded = false
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Delete,
