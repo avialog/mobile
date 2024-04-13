@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,12 +39,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import domain.model.Contact
 import ui.components.ErrorItem
 import ui.components.LoaderFullScreen
@@ -227,10 +231,17 @@ private fun NameAndSurnameColumn(
 
 @Composable
 private fun Avatar(photoUrl: String?) {
-    Box(
-        modifier =
-            Modifier.size(size = 40.dp)
-                .background(color = Color.LightGray, shape = CircleShape),
+    SubcomposeAsyncImage(
+        model = photoUrl,
+        contentDescription = null,
+        contentScale = ContentScale.FillBounds,
+        loading = {
+            Box(modifier = Modifier.fillMaxSize().background(color = Color.LightGray))
+        },
+        error = {
+            Box(modifier = Modifier.fillMaxSize().background(color = Color.LightGray))
+        },
+        modifier = Modifier.size(size = 40.dp).clip(shape = CircleShape),
     )
 }
 

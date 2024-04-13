@@ -10,6 +10,7 @@ androidx-core-ktx = "1.12.0"
 androidx-espresso-core = "3.5.1"
 androidx-material = "1.11.0"
 androidx-test-junit = "1.1.5"
+coil = "3.0.0-alpha06"
 compose = "1.6.2"
 compose-plugin = "1.6.0"
 firebaseAuth = "1.11.1"
@@ -26,6 +27,8 @@ kotlinx-atomicfu = "0.23.2"
 ktor-client = "2.3.6"
 
 [libraries]
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
 decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "extensionsComposeJetbrains" }
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseAuth" }
 font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "fontAwesome" }
