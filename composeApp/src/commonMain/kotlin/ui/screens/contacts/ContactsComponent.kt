@@ -18,6 +18,7 @@ class ContactsComponent(
     private val getContacts: GetContacts,
     private val deleteContact: DeleteContact,
     private val logger: ILogger,
+    private val onNavigateToAddContact: () -> Unit,
 ) : BaseMviViewModel<ContactsState, ContactsEvent>(
         componentContext = componentContext,
         initialState =
@@ -34,7 +35,7 @@ class ContactsComponent(
                 retrySharedFlow = retrySharedFlow,
                 logger = logger,
             ) {
-                getContacts().sortedBy { it.firstName }
+                getContacts().sortedBy { it.firstName.uppercase() }
             }.collect {
                 updateState {
                     copy(contactsResource = it)
@@ -48,7 +49,7 @@ class ContactsComponent(
             ContactsEvent.BackClick -> onNavigateBack()
             ContactsEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
             is ContactsEvent.ContactClick -> {}
-            ContactsEvent.AddContactClick -> {}
+            ContactsEvent.AddContactClick -> onNavigateToAddContact()
             is ContactsEvent.DeleteContactClick -> {
                 updateState {
                     copy(isRequestInProgress = true)

@@ -9,6 +9,7 @@ import data.repository.auth.IAuthRepository
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
+import domain.useCase.AddContact
 import domain.useCase.DeleteContact
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
@@ -92,6 +93,11 @@ val di =
         }
         bindProvider<DeleteContact> {
             DeleteContact(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<AddContact> {
+            AddContact(
                 avialogDataProvider = instance(),
             )
         }

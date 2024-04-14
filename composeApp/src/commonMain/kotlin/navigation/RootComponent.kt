@@ -12,6 +12,7 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
+import domain.useCase.AddContact
 import domain.useCase.DeleteContact
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
@@ -21,6 +22,7 @@ import domain.useCase.LoginWithEmailAndPassword
 import domain.useCase.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
+import ui.screens.addContact.AddContactComponent
 import ui.screens.carrier.CarrierComponent
 import ui.screens.contacts.ContactsComponent
 import ui.screens.flights.FlightsComponent
@@ -143,6 +145,31 @@ class RootComponent(
                             onNavigateBack = {
                                 navigation.pop()
                             },
+                            onNavigateToAddContact = {
+                                navigation.pushNew(Configuration.AddContact)
+                            },
+                        ),
+                )
+            }
+
+            Configuration.AddContact -> {
+                val logger: ILogger by di.instance()
+                val addContact: AddContact by di.instance()
+
+                Child.AddContact(
+                    component =
+                        AddContactComponent(
+                            componentContext = context,
+                            addContact = addContact,
+                            logger = logger,
+                            onNavigateBack = {
+                                navigation.pop()
+                            },
+                            onNavigateBackWithRefreshing = {
+                                navigation.pop()
+                                navigation.pop()
+                                navigation.pushNew(Configuration.Contacts)
+                            },
                         ),
                 )
             }
@@ -161,6 +188,8 @@ class RootComponent(
         data class Onboarding(val component: OnboardingComponent) : Child()
 
         data class Contacts(val component: ContactsComponent) : Child()
+
+        data class AddContact(val component: AddContactComponent) : Child()
     }
 
     @Serializable
@@ -182,5 +211,8 @@ class RootComponent(
 
         @Serializable
         data object Contacts : Configuration()
+
+        @Serializable
+        data object AddContact : Configuration()
     }
 }

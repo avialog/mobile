@@ -8,6 +8,7 @@ import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpMethod
+import io.ktor.http.isSuccess
 
 abstract class BaseDataProvider(
     private val getHttpClient: GetHttpClient,
@@ -40,6 +41,13 @@ abstract class BaseDataProvider(
                 value = "Bearer ${authRepository.getAuthToken()}",
             )
             additionalRequestParams()
+        }.also {
+            when {
+                it.status.isSuccess() -> {}
+                else -> {
+                    throw AvialogNetworkException(it.status.value)
+                }
+            }
         }
     }
 }
