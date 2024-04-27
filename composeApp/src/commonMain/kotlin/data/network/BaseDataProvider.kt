@@ -14,7 +14,7 @@ abstract class BaseDataProvider(
     private val getHttpClient: GetHttpClient,
     private val authRepository: IAuthRepository,
 ) {
-    suspend inline fun <reified REQUEST : Any, reified RESPONSE : Any> authorizedRequest(
+    protected suspend inline fun <reified REQUEST : Any, reified RESPONSE : Any> authorizedRequest(
         url: String,
         httpMethod: HttpMethod,
         body: REQUEST? = null,
@@ -29,7 +29,7 @@ abstract class BaseDataProvider(
         }.body<RESPONSE>()
     }
 
-    suspend fun authorizedRequest(
+    protected suspend fun authorizedRequest(
         url: String,
         httpMethod: HttpMethod,
         additionalRequestParams: HttpRequestBuilder.() -> Unit,

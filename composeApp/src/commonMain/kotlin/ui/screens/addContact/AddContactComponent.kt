@@ -3,7 +3,9 @@ package ui.screens.addContact
 import BaseMviViewModel
 import ILogger
 import com.arkivanov.decompose.ComponentContext
+import domain.model.Contact
 import domain.useCase.AddContact
+import domain.useCase.EditContact
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -11,7 +13,9 @@ import kotlinx.coroutines.launch
 
 class AddContactComponent(
     componentContext: ComponentContext,
+    contactToUpdateOrNull: Contact?,
     private val addContact: AddContact,
+    private val editContact: EditContact,
     private val logger: ILogger,
     private val onNavigateBack: () -> Unit,
     private val onNavigateBackWithRefreshing: () -> Unit,
@@ -19,12 +23,13 @@ class AddContactComponent(
         componentContext = componentContext,
         initialState =
             AddContactState(
-                name = "",
-                surname = "",
-                phoneNumber = "",
-                email = "",
-                companyName = "",
-                notes = "",
+                idToUpdateOrNull = contactToUpdateOrNull?.id,
+                name = contactToUpdateOrNull?.firstName ?: "",
+                surname = contactToUpdateOrNull?.lastName ?: "",
+                phoneNumber = contactToUpdateOrNull?.phone ?: "",
+                email = contactToUpdateOrNull?.emailAddress ?: "",
+                companyName = contactToUpdateOrNull?.company ?: "",
+                notes = contactToUpdateOrNull?.note ?: "",
                 isRequestInProgress = false,
                 showErrorIfAny = false,
             ),
@@ -77,29 +82,53 @@ class AddContactComponent(
                     copy(isRequestInProgress = true)
                 }
                 viewModelScope.launch {
-                    val state = actualState
-                    runCatching {
-                        addContact(
-                            firstName = state.name,
-                            avatarUrl = null,
-                            company = state.companyName.ifBlank { null },
-                            emailAddress = state.email.ifBlank { null },
-                            lastName = state.surname.ifBlank { null },
-                            note = state.notes.ifBlank { null },
-                            phone = state.phoneNumber.ifBlank { null },
-                        )
-                    }.onFailure {
-                        ensureActive()
-                        logger.w(it)
-                        errorNotificationChannel.send(Unit)
-                    }.onSuccess {
-                        onNavigateBackWithRefreshing()
-                    }
-
+                    makeAddOrUpdateRequest()
+                        .onFailure {
+                            coroutineContext.ensureActive()
+                            logger.w(it)
+                            errorNotificationChannel.send(Unit)
+                        }.onSuccess {
+                            onNavigateBackWithRefreshing()
+                        }
                     updateState {
                         copy(isRequestInProgress = false)
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun makeAddOrUpdateRequest(): Result<Unit> {
+        val state = actualState
+        return runCatching {
+            val firstName = state.name
+            val avatarUrl = null
+            val company = state.companyName.ifBlank { null }
+            val emailAddress = state.email.ifBlank { null }
+            val lastName = state.surname.ifBlank { null }
+            val notes = state.notes.ifBlank { null }
+            val phone = state.phoneNumber.ifBlank { null }
+            if (state.idToUpdateOrNull != null) {
+                editContact(
+                    firstName = firstName,
+                    avatarUrl = avatarUrl,
+                    company = company,
+                    emailAddress = emailAddress,
+                    lastName = lastName,
+                    note = notes,
+                    phone = phone,
+                    id = state.idToUpdateOrNull,
+                )
+            } else {
+                addContact(
+                    firstName = firstName,
+                    avatarUrl = avatarUrl,
+                    company = company,
+                    emailAddress = emailAddress,
+                    lastName = lastName,
+                    note = notes,
+                    phone = phone,
+                )
             }
         }
     }

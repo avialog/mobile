@@ -5,6 +5,7 @@ import ILogger
 import Resource
 import RetrySharedFlow
 import com.arkivanov.decompose.ComponentContext
+import domain.model.Contact
 import domain.useCase.DeleteContact
 import domain.useCase.GetContacts
 import kotlinx.coroutines.ensureActive
@@ -19,6 +20,7 @@ class ContactsComponent(
     private val deleteContact: DeleteContact,
     private val logger: ILogger,
     private val onNavigateToAddContact: () -> Unit,
+    private val onNavigateToUpdateContact: (contact: Contact) -> Unit,
 ) : BaseMviViewModel<ContactsState, ContactsEvent>(
         componentContext = componentContext,
         initialState =
@@ -75,7 +77,9 @@ class ContactsComponent(
                     }
                 }
             }
-            is ContactsEvent.EditContactClick -> {}
+            is ContactsEvent.EditContactClick -> {
+                onNavigateToUpdateContact(event.contact)
+            }
         }
     }
 }
