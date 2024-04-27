@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -142,6 +143,9 @@ private fun Content(
                 onNewEvent = onNewEvent,
             )
         }
+        item {
+            Spacer(modifier = Modifier.height(height = 48.dp))
+        }
     }
 }
 
@@ -165,7 +169,7 @@ private fun AirplaneCard(
                 .height(height = 80.dp)
                 .background(color = Color.White, shape = shape)
                 .clip(shape = shape)
-                .clickable { onNewEvent(AirplanesEvent.AddAirplaneClick) },
+                .clickable { onNewEvent(AirplanesEvent.AirplaneClick(airplane = airplane)) },
     ) {
         Photo(
             photoUrl = airplane.imageUrl,

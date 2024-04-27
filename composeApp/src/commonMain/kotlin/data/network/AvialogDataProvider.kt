@@ -1,6 +1,8 @@
 package data.network
 
+import data.dto.request.AddAirplaneRequestDto
 import data.dto.request.AddContactRequestDto
+import data.dto.request.EditAirplaneRequestDto
 import data.dto.request.EditContactRequestDto
 import data.dto.request.EmptyRequestDto
 import data.dto.response.AircraftResponseDto
@@ -96,9 +98,49 @@ class AvialogDataProvider(
             httpMethod = HttpMethod.Get,
         ).map { it.toDomain() }
 
-    suspend fun deleteAirplane(airplaneId: Long) =
+    suspend fun deleteAirplane(airplaneId: Long) {
         authorizedRequest<EmptyRequestDto, EmptyRequestDto>(
             url = "aircraft/$airplaneId",
             httpMethod = HttpMethod.Delete,
         )
+    }
+
+    suspend fun addAirplane(
+        airplaneModel: String,
+        registrationNumber: String,
+        remarks: String?,
+        imageUrl: String?,
+    ) {
+        authorizedRequest<AddAirplaneRequestDto, EmptyRequestDto>(
+            url = "aircraft",
+            httpMethod = HttpMethod.Post,
+            body =
+                AddAirplaneRequestDto(
+                    airplaneModel = airplaneModel,
+                    registrationNumber = registrationNumber,
+                    remarks = remarks,
+                    imageUrl = imageUrl,
+                ),
+        )
+    }
+
+    suspend fun editAirplane(
+        airplaneId: Long,
+        airplaneModel: String,
+        registrationNumber: String,
+        remarks: String?,
+        imageUrl: String?,
+    ) {
+        authorizedRequest<EditAirplaneRequestDto, EmptyRequestDto>(
+            url = "aircraft/$airplaneId",
+            httpMethod = HttpMethod.Put,
+            body =
+                EditAirplaneRequestDto(
+                    airplaneModel = airplaneModel,
+                    registrationNumber = registrationNumber,
+                    remarks = remarks,
+                    imageUrl = imageUrl,
+                ),
+        )
+    }
 }
