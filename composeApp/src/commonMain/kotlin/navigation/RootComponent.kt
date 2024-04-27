@@ -14,6 +14,7 @@ import data.repository.auth.IAuthRepository
 import di.di
 import domain.model.Contact
 import domain.useCase.AddContact
+import domain.useCase.DeleteAirplane
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
 import domain.useCase.GetAirplanes
@@ -192,6 +193,7 @@ class RootComponent(
             Configuration.Airplanes -> {
                 val logger: ILogger by di.instance()
                 val getAirplanes: GetAirplanes by di.instance()
+                val deleteAirplane: DeleteAirplane by di.instance()
 
                 Child.Airplanes(
                     component =
@@ -199,6 +201,7 @@ class RootComponent(
                             componentContext = context,
                             getAirplanes = getAirplanes,
                             logger = logger,
+                            deleteAirplane = deleteAirplane,
                             onNavigateBack = {
                                 navigation.pop()
                             },

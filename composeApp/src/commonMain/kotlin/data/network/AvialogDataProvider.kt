@@ -95,4 +95,10 @@ class AvialogDataProvider(
             url = "aircraft",
             httpMethod = HttpMethod.Get,
         ).map { it.toDomain() }
+
+    suspend fun deleteAirplane(airplaneId: Long) =
+        authorizedRequest<EmptyRequestDto, EmptyRequestDto>(
+            url = "aircraft/$airplaneId",
+            httpMethod = HttpMethod.Delete,
+        )
 }

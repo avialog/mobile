@@ -31,6 +31,7 @@ fun List<ContactResponseDto>.toDomain(): List<Contact> =
 
 fun AircraftResponseDto.toDomain(): Airplane =
     Airplane(
+        id = id,
         airplaneModel = airplaneModel,
         imageUrl = imageUrl,
         remarks = remarks,

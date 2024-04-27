@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AircraftResponseDto(
+    @SerialName("id") val id: Long,
     @SerialName("aircraft_model") val airplaneModel: String,
     @SerialName("registration_number") val registrationNumber: String,
     @SerialName("remarks") val remarks: String?,
