@@ -12,20 +12,24 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
+import domain.model.Airplane
 import domain.model.Contact
 import domain.useCase.AddContact
-import domain.useCase.DeleteAirplane
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
-import domain.useCase.GetAirplanes
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
 import domain.useCase.LogOut
 import domain.useCase.LoginWithEmailAndPassword
 import domain.useCase.RegisterWithEmailAndPassword
+import domain.useCase.airplane.AddAirplane
+import domain.useCase.airplane.DeleteAirplane
+import domain.useCase.airplane.EditAirplane
+import domain.useCase.airplane.GetAirplanes
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
+import ui.screens.addAirplane.AddAirplaneComponent
 import ui.screens.addContact.AddContactComponent
 import ui.screens.airplanes.AirplanesComponent
 import ui.screens.carrier.CarrierComponent
@@ -205,6 +209,39 @@ class RootComponent(
                             onNavigateBack = {
                                 navigation.pop()
                             },
+                            onNavigateToAddAirplane = {
+                                navigation.pushNew(Configuration.AddAirplane())
+                            },
+                            onNavigateToEditAirplane = {
+                                navigation.pushNew(
+                                    Configuration.AddAirplane(airplaneToUpdateOrNull = it),
+                                )
+                            },
+                        ),
+                )
+            }
+
+            is Configuration.AddAirplane -> {
+                val logger: ILogger by di.instance()
+                val addAirplane: AddAirplane by di.instance()
+                val editAirplane: EditAirplane by di.instance()
+
+                Child.AddAirplane(
+                    component =
+                        AddAirplaneComponent(
+                            componentContext = context,
+                            addAirplane = addAirplane,
+                            editAirplane = editAirplane,
+                            logger = logger,
+                            onNavigateBack = {
+                                navigation.pop()
+                            },
+                            onNavigateBackWithRefreshing = {
+                                navigation.pop()
+                                navigation.pop()
+                                navigation.pushNew(Configuration.Airplanes)
+                            },
+                            airplaneToUpdateOrNull = config.airplaneToUpdateOrNull,
                         ),
                 )
             }
@@ -227,6 +264,8 @@ class RootComponent(
         data class AddContact(val component: AddContactComponent) : Child()
 
         data class Airplanes(val component: AirplanesComponent) : Child()
+
+        data class AddAirplane(val component: AddAirplaneComponent) : Child()
     }
 
     @Serializable
@@ -254,5 +293,8 @@ class RootComponent(
 
         @Serializable
         data object Airplanes : Configuration()
+
+        @Serializable
+        data class AddAirplane(val airplaneToUpdateOrNull: Airplane? = null) : Configuration()
     }
 }

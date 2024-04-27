@@ -1,11 +1,10 @@
-package data.dto.response
+package data.dto.request
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AircraftResponseDto(
-    @SerialName("id") val id: Long,
+data class EditAirplaneRequestDto(
     @SerialName("aircraft_model") val airplaneModel: String,
     @SerialName("registration_number") val registrationNumber: String,
     @SerialName("remarks") val remarks: String?,

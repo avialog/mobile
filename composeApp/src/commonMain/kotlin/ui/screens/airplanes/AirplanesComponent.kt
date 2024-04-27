@@ -5,8 +5,9 @@ import ILogger
 import Resource
 import RetrySharedFlow
 import com.arkivanov.decompose.ComponentContext
-import domain.useCase.DeleteAirplane
-import domain.useCase.GetAirplanes
+import domain.model.Airplane
+import domain.useCase.airplane.DeleteAirplane
+import domain.useCase.airplane.GetAirplanes
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import mapIfSuccess
@@ -18,6 +19,8 @@ class AirplanesComponent(
     private val getAirplanes: GetAirplanes,
     private val deleteAirplane: DeleteAirplane,
     private val logger: ILogger,
+    private val onNavigateToAddAirplane: () -> Unit,
+    private val onNavigateToEditAirplane: (Airplane) -> Unit,
 ) : BaseMviViewModel<AirplanesState, AirplanesEvent>(
         componentContext = componentContext,
         initialState =
@@ -45,7 +48,7 @@ class AirplanesComponent(
 
     override fun onNewEvent(event: AirplanesEvent) {
         when (event) {
-            AirplanesEvent.AddAirplaneClick -> {}
+            AirplanesEvent.AddAirplaneClick -> onNavigateToAddAirplane()
             is AirplanesEvent.AirplaneClick -> {}
             AirplanesEvent.BackClick -> onNavigateBack()
             is AirplanesEvent.DeleteAirplaneClick -> {
@@ -73,7 +76,7 @@ class AirplanesComponent(
                     }
                 }
             }
-            is AirplanesEvent.EditAirplaneClick -> {}
+            is AirplanesEvent.EditAirplaneClick -> onNavigateToEditAirplane(event.airplane)
             AirplanesEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
         }
     }

@@ -10,16 +10,18 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import domain.useCase.AddContact
-import domain.useCase.DeleteAirplane
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
-import domain.useCase.GetAirplanes
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
 import domain.useCase.LogOut
 import domain.useCase.LoginWithEmailAndPassword
 import domain.useCase.RegisterWithEmailAndPassword
+import domain.useCase.airplane.AddAirplane
+import domain.useCase.airplane.DeleteAirplane
+import domain.useCase.airplane.EditAirplane
+import domain.useCase.airplane.GetAirplanes
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
@@ -116,6 +118,16 @@ val di =
         }
         bindProvider<DeleteAirplane> {
             DeleteAirplane(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<AddAirplane> {
+            AddAirplane(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<EditAirplane> {
+            EditAirplane(
                 avialogDataProvider = instance(),
             )
         }

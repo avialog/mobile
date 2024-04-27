@@ -1,4 +1,4 @@
-package domain.useCase
+package domain.useCase.airplane
 
 import data.network.AvialogDataProvider
 
