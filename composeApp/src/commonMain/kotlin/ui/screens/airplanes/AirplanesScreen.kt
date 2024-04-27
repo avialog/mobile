@@ -1,22 +1,20 @@
-package ui.screens.contacts
+package ui.screens.airplanes
 
-import Resource
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -33,17 +31,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import domain.model.Contact
+import domain.model.Airplane
 import ui.components.ErrorItem
 import ui.components.LoaderFullScreen
 import ui.components.MoreIconWithDropdown
@@ -51,9 +47,9 @@ import ui.components.Photo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactsScreen(
-    state: ContactsState,
-    onNewEvent: (ContactsEvent) -> Unit,
+fun AirplanesScreen(
+    state: AirplanesState,
+    onNewEvent: (AirplanesEvent) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -62,7 +58,7 @@ fun ContactsScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Kontakty",
+                        text = "Samoloty",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge,
@@ -71,7 +67,7 @@ fun ContactsScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            onNewEvent(ContactsEvent.BackClick)
+                            onNewEvent(AirplanesEvent.BackClick)
                         },
                     ) {
                         Icon(
@@ -86,7 +82,7 @@ fun ContactsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onNewEvent(ContactsEvent.AddContactClick)
+                    onNewEvent(AirplanesEvent.AddAirplaneClick)
                 },
             ) {
                 Icon(
@@ -102,11 +98,11 @@ fun ContactsScreen(
                     .padding(paddingValues = innerPadding)
                     .consumeWindowInsets(innerPadding),
         ) {
-            when (state.contactsResource) {
+            when (state.airplanesResource) {
                 is Resource.Error -> {
                     ErrorItem(
                         onRetryClick = {
-                            onNewEvent(ContactsEvent.RetryClick)
+                            onNewEvent(AirplanesEvent.RetryClick)
                         },
                     )
                 }
@@ -116,7 +112,7 @@ fun ContactsScreen(
                 is Resource.Success ->
                     Box {
                         Content(
-                            contacts = state.contactsResource.data,
+                            airplanes = state.airplanesResource.data,
                             onNewEvent = onNewEvent,
                         )
                         if (state.isRequestInProgress) {
@@ -128,146 +124,110 @@ fun ContactsScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
-    contacts: List<Contact>,
-    onNewEvent: (ContactsEvent) -> Unit,
+    airplanes: List<Airplane>,
+    onNewEvent: (AirplanesEvent) -> Unit,
 ) {
-    Column {
-        val groupedContacts =
-            remember(contacts) {
-                contacts.groupBy { it.firstName.first().uppercase() }
-            }
-
-        LazyColumn {
-            groupedContacts.entries.toList().forEach { (firstCharacter, contactList) ->
-                stickyHeader {
-                    CharacterSectionHeader(character = firstCharacter)
-                }
-                items(contactList) {
-                    ContactItem(
-                        contact = it,
-                        onNewEvent = onNewEvent,
-                    )
-                }
-            }
-            item {
-                Spacer(modifier = Modifier.height(height = 48.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun CharacterSectionHeader(character: String) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier =
-            Modifier.fillMaxWidth()
-                .shadow(
-                    elevation = 1.dp,
-                    spotColor = Color.DarkGray,
-                    shape = RectangleShape,
-                )
-                .background(color = MaterialTheme.colorScheme.background)
-                .padding(vertical = 8.dp),
+    LazyColumn(
+        contentPadding =
+            PaddingValues(
+                horizontal = 16.dp,
+            ),
+        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
     ) {
-        Text(
-            text = character,
-            style = MaterialTheme.typography.titleLarge,
-        )
-    }
-}
-
-@Composable
-private fun ContactItem(
-    contact: Contact,
-    onNewEvent: (ContactsEvent) -> Unit,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier =
-            Modifier.fillMaxWidth()
-                .clickable {
-                    onNewEvent(ContactsEvent.ContactClick(contact = contact))
-                }
-                .padding(all = 16.dp),
-    ) {
-        Avatar(photoUrl = contact.avatarUrl)
-        NameAndSurnameColumn(
-            contact = contact,
-            modifier = Modifier.weight(weight = 1f),
-        )
-        MoreIconWithDropdown(
-            contact = contact,
-            onNewEvent = onNewEvent,
-        )
-    }
-}
-
-@Composable
-private fun NameAndSurnameColumn(
-    contact: Contact,
-    modifier: Modifier,
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
-        modifier = modifier,
-    ) {
-        Text(
-            text = "${contact.firstName} ${contact.lastName ?: ""}",
-            style = MaterialTheme.typography.titleMedium,
-        )
-        contact.phone?.let {
-            Text(
-                text = contact.phone,
-                style = MaterialTheme.typography.bodyMedium,
+        items(airplanes) { airplane ->
+            AirplaneCard(
+                airplane = airplane,
+                onNewEvent = onNewEvent,
             )
         }
     }
 }
 
 @Composable
-private fun Avatar(photoUrl: String?) {
-    Photo(
-        photoUrl = photoUrl,
-        modifier = Modifier.size(size = 40.dp).clip(shape = CircleShape),
-    )
+private fun AirplaneCard(
+    airplane: Airplane,
+    onNewEvent: (AirplanesEvent) -> Unit,
+) {
+    val shape = RoundedCornerShape(size = 8.dp)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+        modifier =
+            Modifier
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x40000000),
+                    ambientColor = Color(0x40000000),
+                    shape = shape,
+                )
+                .height(height = 80.dp)
+                .background(color = Color.White, shape = shape)
+                .clip(shape = shape)
+                .clickable { onNewEvent(AirplanesEvent.AddAirplaneClick) },
+    ) {
+        Photo(
+            photoUrl = airplane.imageUrl,
+            modifier =
+                Modifier.fillMaxHeight()
+                    .width(width = 100.dp),
+        )
+        ModelAndRegistration(
+            airplane = airplane,
+            modifier = Modifier.weight(weight = 1f),
+        )
+        MoreIconWithDropdown { onDismiss ->
+            DropdownMenuItem(
+                text = { Text("Edytuj samolot") },
+                onClick = {
+                    onNewEvent(AirplanesEvent.EditAirplaneClick(airplane = airplane))
+                    onDismiss()
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = null,
+                    )
+                },
+            )
+            DropdownMenuItem(
+                text = { Text("Usuń samolot") },
+                onClick = {
+                    onNewEvent(AirplanesEvent.DeleteAirplaneClick(airplane = airplane))
+                    onDismiss()
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Delete,
+                        contentDescription = null,
+                    )
+                },
+            )
+        }
+    }
 }
 
 @Composable
-private fun MoreIconWithDropdown(
-    contact: Contact,
-    onNewEvent: (ContactsEvent) -> Unit,
+private fun ModelAndRegistration(
+    airplane: Airplane,
+    modifier: Modifier = Modifier,
 ) {
-    MoreIconWithDropdown { onDismiss ->
-        DropdownMenuItem(
-            text = { Text("Edytuj kontakt") },
-            onClick = {
-                onNewEvent(ContactsEvent.EditContactClick(contact = contact))
-                onDismiss()
-            },
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.Edit,
-                    contentDescription = null,
-                )
-            },
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        modifier = modifier,
+    ) {
+        Text(
+            text = airplane.airplaneModel,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
-        DropdownMenuItem(
-            text = { Text("Usuń kontakt") },
-            onClick = {
-                onNewEvent(ContactsEvent.DeleteContactClick(contact = contact))
-                onDismiss()
-            },
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.Delete,
-                    contentDescription = null,
-                )
-            },
+        Text(
+            text = airplane.registrationNumber,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
