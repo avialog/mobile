@@ -3,10 +3,12 @@ package data.network
 import data.dto.request.AddContactRequestDto
 import data.dto.request.EditContactRequestDto
 import data.dto.request.EmptyRequestDto
+import data.dto.response.AircraftResponseDto
 import data.dto.response.ContactResponseDto
 import data.dto.response.ProfileResponseDto
 import data.mapper.toDomain
 import data.repository.auth.IAuthRepository
+import domain.model.Airplane
 import domain.model.Contact
 import domain.model.Profile
 import io.ktor.http.HttpMethod
@@ -87,4 +89,10 @@ class AvialogDataProvider(
                 ),
         )
     }
+
+    suspend fun getAirplanes(): List<Airplane> =
+        authorizedRequest<EmptyRequestDto, List<AircraftResponseDto>>(
+            url = "aircraft",
+            httpMethod = HttpMethod.Get,
+        ).map { it.toDomain() }
 }

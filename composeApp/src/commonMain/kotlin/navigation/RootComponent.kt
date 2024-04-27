@@ -16,6 +16,7 @@ import domain.model.Contact
 import domain.useCase.AddContact
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
+import domain.useCase.GetAirplanes
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
@@ -25,6 +26,7 @@ import domain.useCase.RegisterWithEmailAndPassword
 import kotlinx.serialization.Serializable
 import org.kodein.di.instance
 import ui.screens.addContact.AddContactComponent
+import ui.screens.airplanes.AirplanesComponent
 import ui.screens.carrier.CarrierComponent
 import ui.screens.contacts.ContactsComponent
 import ui.screens.flights.FlightsComponent
@@ -110,6 +112,9 @@ class RootComponent(
                             onNavigateToContacts = {
                                 navigation.pushNew(Configuration.Contacts)
                             },
+                            onNavigateToAirplanes = {
+                                navigation.pushNew(Configuration.Airplanes)
+                            },
                         ),
                 )
             }
@@ -183,6 +188,23 @@ class RootComponent(
                         ),
                 )
             }
+
+            Configuration.Airplanes -> {
+                val logger: ILogger by di.instance()
+                val getAirplanes: GetAirplanes by di.instance()
+
+                Child.Airplanes(
+                    component =
+                        AirplanesComponent(
+                            componentContext = context,
+                            getAirplanes = getAirplanes,
+                            logger = logger,
+                            onNavigateBack = {
+                                navigation.pop()
+                            },
+                        ),
+                )
+            }
         }
     }
 
@@ -200,6 +222,8 @@ class RootComponent(
         data class Contacts(val component: ContactsComponent) : Child()
 
         data class AddContact(val component: AddContactComponent) : Child()
+
+        data class Airplanes(val component: AirplanesComponent) : Child()
     }
 
     @Serializable
@@ -224,5 +248,8 @@ class RootComponent(
 
         @Serializable
         data class AddContact(val contactToUpdateOrNull: Contact? = null) : Configuration()
+
+        @Serializable
+        data object Airplanes : Configuration()
     }
 }

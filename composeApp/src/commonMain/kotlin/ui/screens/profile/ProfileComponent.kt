@@ -15,6 +15,7 @@ class ProfileComponent(
     componentContext: ComponentContext,
     private val onNavigateToLogin: () -> Unit,
     private val onNavigateToContacts: () -> Unit,
+    private val onNavigateToAirplanes: () -> Unit,
     private val logger: ILogger,
     private val getProfile: GetProfile,
     private val logOut: LogOut,
@@ -69,7 +70,7 @@ class ProfileComponent(
                 }
             }
             ProfileEvent.PasswordClick -> {}
-            ProfileEvent.PlanesClick -> {}
+            ProfileEvent.PlanesClick -> onNavigateToAirplanes()
             ProfileEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
             ProfileEvent.UserDataClick -> {}
         }
