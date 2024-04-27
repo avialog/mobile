@@ -1,6 +1,7 @@
 package ui.screens.addContact
 
 data class AddContactState(
+    val idToUpdateOrNull: Long?,
     val name: String,
     val surname: String,
     val phoneNumber: String,

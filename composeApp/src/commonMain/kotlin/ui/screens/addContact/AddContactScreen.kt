@@ -54,7 +54,7 @@ fun AddContactScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Dodaj kontakt",
+                        text = state.getScreenText(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge,
@@ -113,10 +113,16 @@ private fun Content(
                 Modifier.padding(vertical = 16.dp)
                     .heightIn(min = 54.dp).fillMaxWidth(),
         ) {
-            Text(text = "Dodaj kontakt")
+            Text(text = state.getScreenText())
         }
     }
 }
+
+private fun AddContactState.getScreenText() =
+    when (idToUpdateOrNull) {
+        null -> "Dodaj kontakt"
+        else -> "Edytuj kontakt"
+    }
 
 @Composable
 private fun InputFields(

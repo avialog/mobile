@@ -12,8 +12,10 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import data.repository.auth.IAuthRepository
 import di.di
+import domain.model.Contact
 import domain.useCase.AddContact
 import domain.useCase.DeleteContact
+import domain.useCase.EditContact
 import domain.useCase.GetContacts
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
@@ -146,21 +148,28 @@ class RootComponent(
                                 navigation.pop()
                             },
                             onNavigateToAddContact = {
-                                navigation.pushNew(Configuration.AddContact)
+                                navigation.pushNew(Configuration.AddContact())
+                            },
+                            onNavigateToUpdateContact = {
+                                navigation.pushNew(
+                                    Configuration.AddContact(contactToUpdateOrNull = it),
+                                )
                             },
                         ),
                 )
             }
 
-            Configuration.AddContact -> {
+            is Configuration.AddContact -> {
                 val logger: ILogger by di.instance()
                 val addContact: AddContact by di.instance()
+                val editContact: EditContact by di.instance()
 
                 Child.AddContact(
                     component =
                         AddContactComponent(
                             componentContext = context,
                             addContact = addContact,
+                            editContact = editContact,
                             logger = logger,
                             onNavigateBack = {
                                 navigation.pop()
@@ -170,6 +179,7 @@ class RootComponent(
                                 navigation.pop()
                                 navigation.pushNew(Configuration.Contacts)
                             },
+                            contactToUpdateOrNull = config.contactToUpdateOrNull,
                         ),
                 )
             }
@@ -213,6 +223,6 @@ class RootComponent(
         data object Contacts : Configuration()
 
         @Serializable
-        data object AddContact : Configuration()
+        data class AddContact(val contactToUpdateOrNull: Contact? = null) : Configuration()
     }
 }

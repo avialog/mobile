@@ -1,5 +1,8 @@
 package domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Contact(
     val id: Long,
     val avatarUrl: String?,
