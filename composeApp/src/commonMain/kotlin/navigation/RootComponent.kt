@@ -31,6 +31,7 @@ import kotlinx.serialization.Serializable
 import org.kodein.di.instance
 import ui.screens.addAirplane.AddAirplaneComponent
 import ui.screens.addContact.AddContactComponent
+import ui.screens.addLogbook.AddLogbookComponent
 import ui.screens.airplanes.AirplanesComponent
 import ui.screens.carrier.CarrierComponent
 import ui.screens.contacts.ContactsComponent
@@ -88,6 +89,9 @@ class RootComponent(
                         FlightsComponent(
                             componentContext = context,
                             authRepository = authRepository,
+                            onNavigateToAddLogbook = {
+                                navigation.pushNew(Configuration.AddLogbook)
+                            },
                         ),
                 )
             }
@@ -245,6 +249,21 @@ class RootComponent(
                         ),
                 )
             }
+
+            Configuration.AddLogbook -> {
+                val logger: ILogger by di.instance()
+
+                Child.AddLogbook(
+                    component =
+                        AddLogbookComponent(
+                            componentContext = context,
+                            logger = logger,
+                            onNavigateBack = {
+                                navigation.pop()
+                            },
+                        ),
+                )
+            }
         }
     }
 
@@ -266,6 +285,8 @@ class RootComponent(
         data class Airplanes(val component: AirplanesComponent) : Child()
 
         data class AddAirplane(val component: AddAirplaneComponent) : Child()
+
+        data class AddLogbook(val component: AddLogbookComponent) : Child()
     }
 
     @Serializable
@@ -296,5 +317,8 @@ class RootComponent(
 
         @Serializable
         data class AddAirplane(val airplaneToUpdateOrNull: Airplane? = null) : Configuration()
+
+        @Serializable
+        data object AddLogbook : Configuration()
     }
 }
