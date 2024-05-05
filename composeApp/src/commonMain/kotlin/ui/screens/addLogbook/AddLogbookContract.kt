@@ -44,4 +44,8 @@ sealed interface AddLogbookEvent {
     data class TakeOffTimeChange(val newTime: LocalTime?) : AddLogbookEvent
 
     data class LandingTimeChange(val newTime: LocalTime?) : AddLogbookEvent
+
+    data class TakeOffAirportChange(val newAirport: String) : AddLogbookEvent
+
+    data class LandingAirportChange(val newAirport: String) : AddLogbookEvent
 }

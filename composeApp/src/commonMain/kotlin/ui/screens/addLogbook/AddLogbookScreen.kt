@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
@@ -19,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,13 +30,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Clock
+import compose.icons.fontawesomeicons.solid.PlaneArrival
+import compose.icons.fontawesomeicons.solid.PlaneDeparture
 import ui.components.AvialogDatePicker
 import ui.components.TimePickerDialog
 import ui.utils.formatDayMonthYear
@@ -118,6 +126,10 @@ private fun Content(
             state = state,
             onNewEvent = onNewEvent,
         )
+        AirportInputsRow(
+            state = state,
+            onNewEvent = onNewEvent,
+        )
     }
 }
 
@@ -130,7 +142,7 @@ private fun DatesRow(
         val showStartDateDialog = remember { mutableStateOf(false) }
         ChooseTimeCard(
             text = state.takeOffDate?.formatDayMonthYear() ?: "Wybierz datę",
-            label = "Data startu*",
+            label = "Data startu (UTC)*",
             onClick = {
                 showStartDateDialog.value = true
             },
@@ -153,7 +165,7 @@ private fun DatesRow(
         val showEndDateDialog = remember { mutableStateOf(false) }
         ChooseTimeCard(
             text = state.landingDate?.formatDayMonthYear() ?: "Wybierz datę",
-            label = "Data lądowania*",
+            label = "Data lądowania (UTC)*",
             onClick = {
                 showEndDateDialog.value = true
             },
@@ -184,7 +196,7 @@ private fun TimesRow(
         val showStartTimeDialog = remember { mutableStateOf(false) }
         ChooseTimeCard(
             text = state.takeOffTime?.formatHourMinute() ?: "Wybierz godzinę",
-            label = "Czas startu*",
+            label = "Czas startu (UTC)*",
             onClick = {
                 showStartTimeDialog.value = true
             },
@@ -208,7 +220,7 @@ private fun TimesRow(
         val showEndTimeDialog = remember { mutableStateOf(false) }
         ChooseTimeCard(
             text = state.landingTime?.formatHourMinute() ?: "Wybierz godzinę",
-            label = "Czas lądowania*",
+            label = "Czas lądowania (UTC)*",
             onClick = {
                 showEndTimeDialog.value = true
             },
@@ -228,6 +240,70 @@ private fun TimesRow(
                 initial = state.landingTime,
             )
         }
+    }
+}
+
+@Composable
+private fun AirportInputsRow(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+        OutlinedTextField(
+            value = state.takeOffAirportCode,
+            onValueChange = {
+                onNewEvent(AddLogbookEvent.TakeOffAirportChange(it))
+            },
+            singleLine = true,
+            label = {
+                Text(
+                    text = "Lotnisko startu*",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            leadingIcon = {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.PlaneDeparture,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 16.dp),
+                )
+            },
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Right)
+                    },
+                ),
+            modifier = Modifier.weight(weight = 1f),
+        )
+        OutlinedTextField(
+            value = state.landingAirportCode,
+            onValueChange = {
+                onNewEvent(AddLogbookEvent.LandingAirportChange(it))
+            },
+            singleLine = true,
+            label = {
+                Text(
+                    text = "Lotnisko lądowania*",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.PlaneArrival,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 16.dp),
+                )
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            modifier = Modifier.weight(weight = 1f),
+        )
     }
 }
 

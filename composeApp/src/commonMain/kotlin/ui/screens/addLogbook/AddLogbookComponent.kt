@@ -70,6 +70,17 @@ class AddLogbookComponent(
                     copy(takeOffTime = event.newTime)
                 }
             }
+
+            is AddLogbookEvent.LandingAirportChange -> {
+                updateState {
+                    copy(landingAirportCode = event.newAirport)
+                }
+            }
+            is AddLogbookEvent.TakeOffAirportChange -> {
+                updateState {
+                    copy(takeOffAirportCode = event.newAirport)
+                }
+            }
         }
     }
 }
