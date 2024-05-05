@@ -48,4 +48,6 @@ sealed interface AddLogbookEvent {
     data class TakeOffAirportChange(val newAirport: String) : AddLogbookEvent
 
     data class LandingAirportChange(val newAirport: String) : AddLogbookEvent
+
+    data object ChooseAirplaneClick : AddLogbookEvent
 }

@@ -3,9 +3,14 @@ package ui.screens.addLogbook
 import BaseMviViewModel
 import ILogger
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
 import domain.model.Style
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import ui.screens.chooseAirplane.ChooseAirplaneComponent
+import ui.screens.chooseAirplane.ChooseAirplaneConfiguration
 
 class AddLogbookComponent(
     componentContext: ComponentContext,
@@ -39,6 +44,16 @@ class AddLogbookComponent(
                 style = Style.IFR,
             ),
     ) {
+    private val chooseAirplaneSlotNavigation = SlotNavigation<ChooseAirplaneConfiguration>()
+    val chooseAirplaneSlot =
+        childSlot(
+            source = chooseAirplaneSlotNavigation,
+            serializer = ChooseAirplaneConfiguration.serializer(),
+            handleBackButton = true,
+        ) { _, childComponentContext ->
+            ChooseAirplaneComponent(componentContext = childComponentContext)
+        }
+
     private val errorNotificationChannel = Channel<Unit>(Channel.UNLIMITED)
     val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
 
@@ -80,6 +95,10 @@ class AddLogbookComponent(
                 updateState {
                     copy(takeOffAirportCode = event.newAirport)
                 }
+            }
+
+            AddLogbookEvent.ChooseAirplaneClick -> {
+                chooseAirplaneSlotNavigation.activate(ChooseAirplaneConfiguration)
             }
         }
     }

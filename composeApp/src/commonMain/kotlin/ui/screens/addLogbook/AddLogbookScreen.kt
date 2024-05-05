@@ -130,6 +130,9 @@ private fun Content(
             state = state,
             onNewEvent = onNewEvent,
         )
+        Button(onClick = { onNewEvent(AddLogbookEvent.ChooseAirplaneClick) }) {
+            Text(text = "Wybierz samolot")
+        }
     }
 }
 
