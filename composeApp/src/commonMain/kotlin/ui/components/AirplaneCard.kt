@@ -35,9 +35,10 @@ interface AirplaneCard {
 
 @Composable
 fun AirplaneCard(
-    airplane: Airplane,
+    airplane: Airplane?,
     moreActions: AirplaneCard.MoreActions?,
     onAirplaneClick: () -> Unit,
+    textIfAirplaneNull: String = "",
 ) {
     val shape = RoundedCornerShape(size = 8.dp)
     Row(
@@ -57,13 +58,14 @@ fun AirplaneCard(
                 .clickable { onAirplaneClick() },
     ) {
         Photo(
-            photoUrl = airplane.imageUrl,
+            photoUrl = airplane?.imageUrl,
             modifier =
                 Modifier.fillMaxHeight()
                     .width(width = 100.dp),
         )
         ModelAndRegistration(
             airplane = airplane,
+            textIfAirplaneNull = textIfAirplaneNull,
             modifier = Modifier.weight(weight = 1f),
         )
         moreActions?.let {
@@ -101,7 +103,8 @@ fun AirplaneCard(
 
 @Composable
 private fun ModelAndRegistration(
-    airplane: Airplane,
+    airplane: Airplane?,
+    textIfAirplaneNull: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -109,16 +112,18 @@ private fun ModelAndRegistration(
         modifier = modifier,
     ) {
         Text(
-            text = airplane.airplaneModel,
+            text = airplane?.airplaneModel ?: textIfAirplaneNull,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = airplane.registrationNumber,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        airplane?.let {
+            Text(
+                text = airplane.registrationNumber,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }

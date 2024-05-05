@@ -42,6 +42,7 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Clock
 import compose.icons.fontawesomeicons.solid.PlaneArrival
 import compose.icons.fontawesomeicons.solid.PlaneDeparture
+import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
 import ui.components.TimePickerDialog
 import ui.utils.formatDayMonthYear
@@ -130,9 +131,14 @@ private fun Content(
             state = state,
             onNewEvent = onNewEvent,
         )
-        Button(onClick = { onNewEvent(AddLogbookEvent.ChooseAirplaneClick) }) {
-            Text(text = "Wybierz samolot")
-        }
+        AirplaneCard(
+            airplane = state.airplane,
+            onAirplaneClick = {
+                onNewEvent(AddLogbookEvent.ChooseAirplaneClick)
+            },
+            moreActions = null,
+            textIfAirplaneNull = "Wybierz samolot",
+        )
     }
 }
 
