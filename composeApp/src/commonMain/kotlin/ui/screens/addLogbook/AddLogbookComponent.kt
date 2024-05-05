@@ -6,9 +6,13 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import di.di
 import domain.model.Style
+import domain.useCase.airplane.GetAirplanes
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.kodein.di.instance
 import ui.screens.chooseAirplane.ChooseAirplaneComponent
 import ui.screens.chooseAirplane.ChooseAirplaneConfiguration
 
@@ -42,6 +46,7 @@ class AddLogbookComponent(
                 landings = listOf(),
                 passengers = listOf(),
                 style = Style.IFR,
+                airplane = null,
             ),
     ) {
     private val chooseAirplaneSlotNavigation = SlotNavigation<ChooseAirplaneConfiguration>()
@@ -51,7 +56,21 @@ class AddLogbookComponent(
             serializer = ChooseAirplaneConfiguration.serializer(),
             handleBackButton = true,
         ) { _, childComponentContext ->
-            ChooseAirplaneComponent(componentContext = childComponentContext)
+            val getAirplanes: GetAirplanes by di.instance()
+            ChooseAirplaneComponent(
+                componentContext = childComponentContext,
+                getAirplanes = getAirplanes,
+                onAirplaneChosen = {
+                    updateState {
+                        copy(airplane = it)
+                    }
+                    chooseAirplaneSlotNavigation.dismiss()
+                },
+                onNavigateBack = {
+                    chooseAirplaneSlotNavigation.dismiss()
+                },
+                logger = logger,
+            )
         }
 
     private val errorNotificationChannel = Channel<Unit>(Channel.UNLIMITED)

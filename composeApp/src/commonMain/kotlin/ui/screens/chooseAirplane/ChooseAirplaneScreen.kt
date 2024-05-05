@@ -1,7 +1,7 @@
-package ui.screens.airplanes
+package ui.screens.chooseAirplane
 
+import Resource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,10 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,9 +32,9 @@ import ui.components.LoaderFullScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AirplanesScreen(
-    state: AirplanesState,
-    onNewEvent: (AirplanesEvent) -> Unit,
+fun ChooseAirplaneScreen(
+    state: ChooseAirplaneState,
+    onNewEvent: (ChooseAirplaneEvent) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -45,7 +43,7 @@ fun AirplanesScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Samoloty",
+                        text = "Wybierz samolot",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge,
@@ -54,7 +52,7 @@ fun AirplanesScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            onNewEvent(AirplanesEvent.BackClick)
+                            onNewEvent(ChooseAirplaneEvent.BackClick)
                         },
                     ) {
                         Icon(
@@ -65,18 +63,6 @@ fun AirplanesScreen(
                 },
                 scrollBehavior = scrollBehavior,
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onNewEvent(AirplanesEvent.AddAirplaneClick)
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = null,
-                )
-            }
         },
     ) { innerPadding ->
         Column(
@@ -89,7 +75,7 @@ fun AirplanesScreen(
                 is Resource.Error -> {
                     ErrorItem(
                         onRetryClick = {
-                            onNewEvent(AirplanesEvent.RetryClick)
+                            onNewEvent(ChooseAirplaneEvent.RetryClick)
                         },
                     )
                 }
@@ -97,15 +83,10 @@ fun AirplanesScreen(
                     LoaderFullScreen()
                 }
                 is Resource.Success ->
-                    Box {
-                        Content(
-                            airplanes = state.airplanesResource.data,
-                            onNewEvent = onNewEvent,
-                        )
-                        if (state.isRequestInProgress) {
-                            LoaderFullScreen(isOverlay = true)
-                        }
-                    }
+                    Content(
+                        airplanes = state.airplanesResource.data,
+                        onNewEvent = onNewEvent,
+                    )
             }
         }
     }
@@ -114,7 +95,7 @@ fun AirplanesScreen(
 @Composable
 private fun Content(
     airplanes: List<Airplane>,
-    onNewEvent: (AirplanesEvent) -> Unit,
+    onNewEvent: (ChooseAirplaneEvent) -> Unit,
 ) {
     LazyColumn(
         contentPadding =
@@ -127,17 +108,9 @@ private fun Content(
             AirplaneCard(
                 airplane = airplane,
                 onAirplaneClick = {
-                    onNewEvent(AirplanesEvent.AirplaneClick(airplane = airplane))
+                    onNewEvent(ChooseAirplaneEvent.AirplaneClick(airplane = airplane))
                 },
-                moreActions =
-                    AirplaneCard.MoreActions(
-                        onEditAirplaneClick = {
-                            onNewEvent(AirplanesEvent.EditAirplaneClick(airplane = airplane))
-                        },
-                        onDeleteAirplaneClick = {
-                            onNewEvent(AirplanesEvent.DeleteAirplaneClick(airplane = airplane))
-                        },
-                    ),
+                moreActions = null,
             )
         }
         item {
