@@ -36,4 +36,12 @@ sealed interface AddLogbookEvent {
     data object BackClick : AddLogbookEvent
 
     data object SaveClick : AddLogbookEvent
+
+    data class TakeOffDateChange(val newDate: LocalDate?) : AddLogbookEvent
+
+    data class LandingDateChange(val newDate: LocalDate?) : AddLogbookEvent
+
+    data class TakeOffTimeChange(val newTime: LocalTime?) : AddLogbookEvent
+
+    data class LandingTimeChange(val newTime: LocalTime?) : AddLogbookEvent
 }

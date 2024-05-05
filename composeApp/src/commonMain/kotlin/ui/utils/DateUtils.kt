@@ -2,14 +2,17 @@ package ui.utils
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
 import kotlinx.datetime.format.char
+import kotlinx.datetime.toInstant
 
 fun LocalDate.formatDayMonthYear(): String {
     return LocalDate.Format {
         dayOfMonth()
-        char(',')
+        char('.')
         monthNumber()
-        char(',')
+        char('.')
         year()
     }.format(this)
 }
@@ -21,3 +24,8 @@ fun LocalTime.formatHourMinute(): String {
         minute()
     }.format(this)
 }
+
+fun LocalDate.toEpochMillisecondsAsUtc() =
+    atTime(
+        time = LocalTime.fromMillisecondOfDay(0),
+    ).toInstant(timeZone = TimeZone.UTC).toEpochMilliseconds()

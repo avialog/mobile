@@ -48,6 +48,28 @@ class AddLogbookComponent(
 
             AddLogbookEvent.SaveClick -> {
             }
+
+            is AddLogbookEvent.LandingDateChange -> {
+                updateState {
+                    copy(landingDate = event.newDate)
+                }
+            }
+            is AddLogbookEvent.TakeOffDateChange -> {
+                updateState {
+                    copy(takeOffDate = event.newDate)
+                }
+            }
+
+            is AddLogbookEvent.LandingTimeChange -> {
+                updateState {
+                    copy(landingTime = event.newTime)
+                }
+            }
+            is AddLogbookEvent.TakeOffTimeChange -> {
+                updateState {
+                    copy(takeOffTime = event.newTime)
+                }
+            }
         }
     }
 }

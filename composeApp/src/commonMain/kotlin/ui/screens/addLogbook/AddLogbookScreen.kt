@@ -23,13 +23,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Clock
+import ui.components.AvialogDatePicker
+import ui.components.TimePickerDialog
 import ui.utils.formatDayMonthYear
+import ui.utils.formatHourMinute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,9 +107,14 @@ private fun Content(
     modifier: Modifier,
 ) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
         modifier = modifier.padding(horizontal = 16.dp),
     ) {
         DatesRow(
+            state = state,
+            onNewEvent = onNewEvent,
+        )
+        TimesRow(
             state = state,
             onNewEvent = onNewEvent,
         )
@@ -114,20 +127,107 @@ private fun DatesRow(
     onNewEvent: (AddLogbookEvent) -> Unit,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+        val showStartDateDialog = remember { mutableStateOf(false) }
         ChooseTimeCard(
-            text = state.landingDate?.formatDayMonthYear() ?: "Wybierz datę",
+            text = state.takeOffDate?.formatDayMonthYear() ?: "Wybierz datę",
             label = "Data startu*",
             onClick = {
+                showStartDateDialog.value = true
             },
             modifier = Modifier.weight(weight = 1f),
         )
+
+        if (showStartDateDialog.value) {
+            AvialogDatePicker(
+                onDismiss = {
+                    showStartDateDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.TakeOffDateChange(newDate = it))
+                    showStartDateDialog.value = false
+                },
+                initial = state.takeOffDate,
+            )
+        }
+
+        val showEndDateDialog = remember { mutableStateOf(false) }
         ChooseTimeCard(
             text = state.landingDate?.formatDayMonthYear() ?: "Wybierz datę",
-            label = "Data końcowa*",
+            label = "Data lądowania*",
             onClick = {
+                showEndDateDialog.value = true
             },
             modifier = Modifier.weight(weight = 1f),
         )
+
+        if (showEndDateDialog.value) {
+            AvialogDatePicker(
+                onDismiss = {
+                    showEndDateDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.LandingDateChange(newDate = it))
+                    showEndDateDialog.value = false
+                },
+                initial = state.landingDate,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimesRow(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+        val showStartTimeDialog = remember { mutableStateOf(false) }
+        ChooseTimeCard(
+            text = state.takeOffTime?.formatHourMinute() ?: "Wybierz godzinę",
+            label = "Czas startu*",
+            onClick = {
+                showStartTimeDialog.value = true
+            },
+            icon = FontAwesomeIcons.Solid.Clock,
+            modifier = Modifier.weight(weight = 1f),
+        )
+
+        if (showStartTimeDialog.value) {
+            TimePickerDialog(
+                onDismiss = {
+                    showStartTimeDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.TakeOffTimeChange(newTime = it))
+                    showStartTimeDialog.value = false
+                },
+                initial = state.takeOffTime,
+            )
+        }
+
+        val showEndTimeDialog = remember { mutableStateOf(false) }
+        ChooseTimeCard(
+            text = state.landingTime?.formatHourMinute() ?: "Wybierz godzinę",
+            label = "Czas lądowania*",
+            onClick = {
+                showEndTimeDialog.value = true
+            },
+            icon = FontAwesomeIcons.Solid.Clock,
+            modifier = Modifier.weight(weight = 1f),
+        )
+
+        if (showEndTimeDialog.value) {
+            TimePickerDialog(
+                onDismiss = {
+                    showEndTimeDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.LandingTimeChange(newTime = it))
+                    showEndTimeDialog.value = false
+                },
+                initial = state.landingTime,
+            )
+        }
     }
 }
 
