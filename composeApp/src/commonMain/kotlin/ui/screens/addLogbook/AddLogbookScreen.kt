@@ -1,6 +1,8 @@
 package ui.screens.addLogbook
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -8,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
@@ -24,24 +28,34 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.ArrowDown
 import compose.icons.fontawesomeicons.solid.Clock
+import compose.icons.fontawesomeicons.solid.MapMarker
+import compose.icons.fontawesomeicons.solid.Minus
+import compose.icons.fontawesomeicons.solid.MinusCircle
 import compose.icons.fontawesomeicons.solid.PlaneArrival
 import compose.icons.fontawesomeicons.solid.PlaneDeparture
+import compose.icons.fontawesomeicons.solid.Plus
+import domain.model.Landing
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
 import ui.components.TimePickerDialog
@@ -117,7 +131,9 @@ private fun Content(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier =
+            modifier.verticalScroll(state = rememberScrollState())
+                .padding(horizontal = 16.dp),
     ) {
         DatesRow(
             state = state,
@@ -139,6 +155,204 @@ private fun Content(
             moreActions = null,
             textIfAirplaneNull = "Wybierz samolot",
         )
+        Landings(
+            state = state,
+            onNewEvent = onNewEvent,
+        )
+    }
+}
+
+@Composable
+private fun Landings(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(space = 2.dp)) {
+        Text(
+            text = "Lądowania",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        state.landings.forEachIndexed { index, landing ->
+            LandingCard(
+                landing = landing,
+                onLandingChange = {
+                    onNewEvent(AddLogbookEvent.LandingChange(index, it))
+                },
+                showRemoveLandingButton = index != state.landings.lastIndex,
+                onRemoveLanding = {
+                    onNewEvent(AddLogbookEvent.RemoveLandingClick(index))
+                },
+            )
+            if (index != state.landings.lastIndex) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.ArrowDown,
+                    contentDescription = null,
+                    modifier =
+                        Modifier.align(Alignment.CenterHorizontally)
+                            .padding(vertical = 4.dp)
+                            .size(size = 16.dp),
+                )
+            }
+        }
+        TextButton(
+            onClick = {
+                onNewEvent(AddLogbookEvent.AddLandingClick)
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        ) {
+            Text(text = "+ Dodaj lądowanie")
+        }
+    }
+}
+
+@Composable
+private fun LandingCard(
+    landing: Landing,
+    onLandingChange: (Landing) -> Unit,
+    showRemoveLandingButton: Boolean,
+    onRemoveLanding: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 6.dp),
+        modifier =
+            Modifier
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x40000000),
+                    ambientColor = Color(0x40000000),
+                )
+                .background(
+                    color = Color(0xFFFFFFFF),
+                    shape = RoundedCornerShape(size = 8.dp),
+                ),
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier =
+                    Modifier
+                        .align(alignment = Alignment.TopCenter)
+                        .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.MapMarker,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 4.dp).size(size = 16.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = landing.airportCode.ifEmpty { "..." },
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            if (showRemoveLandingButton) {
+                IconButton(
+                    onClick = onRemoveLanding,
+                    modifier =
+                        Modifier
+                            .align(alignment = Alignment.TopEnd),
+                ) {
+                    Icon(
+                        imageVector = FontAwesomeIcons.Solid.MinusCircle,
+                        contentDescription = null,
+                        modifier =
+                            Modifier
+                                .size(size = 16.dp),
+                        tint = Color.Red,
+                    )
+                }
+            }
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier.padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.PlaneDeparture,
+                contentDescription = null,
+                modifier = Modifier.size(size = 16.dp),
+            )
+            Text(
+                text = "Visual",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(weight = 1f),
+            )
+            NumberOfLandingsPicker(
+                label = "Noc",
+                number = landing.nightCount,
+                onNumberChange = {
+                    onLandingChange(landing.copy(nightCount = it))
+                },
+            )
+            NumberOfLandingsPicker(
+                label = "Dzień",
+                number = landing.dayCount,
+                onNumberChange = {
+                    onLandingChange(landing.copy(dayCount = it))
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun NumberOfLandingsPicker(
+    label: String,
+    number: Long,
+    onNumberChange: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        IconButton(
+            onClick = {
+                onNumberChange((number - 1L).coerceAtLeast(minimumValue = 0L))
+            },
+            modifier =
+                Modifier.size(size = 24.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Minus,
+                contentDescription = null,
+                modifier = Modifier.size(size = 12.dp),
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(space = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            Text(
+                text = number.toString(),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        IconButton(
+            onClick = {
+                onNumberChange(number + 1L)
+            },
+            modifier =
+                Modifier.size(size = 24.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Plus,
+                contentDescription = null,
+                modifier = Modifier.size(size = 12.dp),
+            )
+        }
     }
 }
 
@@ -273,7 +487,11 @@ private fun AirportInputsRow(
                     style = MaterialTheme.typography.labelSmall,
                 )
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardOptions =
+                KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Characters,
+                ),
             leadingIcon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.PlaneDeparture,
@@ -310,7 +528,11 @@ private fun AirportInputsRow(
                     modifier = Modifier.size(size = 16.dp),
                 )
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions =
+                KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Characters,
+                ),
             modifier = Modifier.weight(weight = 1f),
         )
     }

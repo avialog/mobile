@@ -52,4 +52,10 @@ sealed interface AddLogbookEvent {
     data class LandingAirportChange(val newAirport: String) : AddLogbookEvent
 
     data object ChooseAirplaneClick : AddLogbookEvent
+
+    data class LandingChange(val index: Int, val newLanding: Landing) : AddLogbookEvent
+
+    data object AddLandingClick : AddLogbookEvent
+
+    data class RemoveLandingClick(val index: Int) : AddLogbookEvent
 }

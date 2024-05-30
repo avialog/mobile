@@ -8,6 +8,8 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import di.di
+import domain.model.ApproachType
+import domain.model.Landing
 import domain.model.Style
 import domain.useCase.airplane.GetAirplanes
 import kotlinx.coroutines.channels.Channel
@@ -15,6 +17,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import org.kodein.di.instance
 import ui.screens.chooseAirplane.ChooseAirplaneComponent
 import ui.screens.chooseAirplane.ChooseAirplaneConfiguration
+
+private const val MAX_AIRPORT_CODE_LENGTH = 5
 
 class AddLogbookComponent(
     componentContext: ComponentContext,
@@ -43,7 +47,16 @@ class AddLogbookComponent(
                 remarks = "",
                 takeOffAirportCode = "",
                 takeOffTime = null,
-                landings = listOf(),
+                landings =
+                    listOf(
+                        Landing(
+                            airportCode = "",
+                            approachType = ApproachType.VISUAL,
+                            count = 0,
+                            dayCount = 0,
+                            nightCount = 0,
+                        ),
+                    ),
                 passengers = listOf(),
                 style = Style.IFR,
                 airplane = null,
@@ -106,18 +119,63 @@ class AddLogbookComponent(
             }
 
             is AddLogbookEvent.LandingAirportChange -> {
+                val newAirport = event.newAirport.take(MAX_AIRPORT_CODE_LENGTH)
                 updateState {
-                    copy(landingAirportCode = event.newAirport)
+                    copy(
+                        landingAirportCode = newAirport,
+                        landings =
+                            landings.toMutableList().apply {
+                                this[lastIndex] = last().copy(airportCode = newAirport)
+                            },
+                    )
                 }
             }
             is AddLogbookEvent.TakeOffAirportChange -> {
                 updateState {
-                    copy(takeOffAirportCode = event.newAirport)
+                    copy(takeOffAirportCode = event.newAirport.take(MAX_AIRPORT_CODE_LENGTH))
                 }
             }
 
             AddLogbookEvent.ChooseAirplaneClick -> {
                 chooseAirplaneSlotNavigation.activate(ChooseAirplaneConfiguration)
+            }
+
+            is AddLogbookEvent.LandingChange -> {
+                updateState {
+                    copy(
+                        landings =
+                            landings.toMutableList().apply {
+                                this[event.index] = event.newLanding
+                            },
+                    )
+                }
+            }
+
+            AddLogbookEvent.AddLandingClick -> {
+                updateState {
+                    copy(
+                        landings =
+                            landings +
+                                Landing(
+                                    airportCode = "",
+                                    approachType = ApproachType.VISUAL,
+                                    count = 0,
+                                    dayCount = 0,
+                                    nightCount = 0,
+                                ),
+                    )
+                }
+            }
+
+            is AddLogbookEvent.RemoveLandingClick -> {
+                updateState {
+                    copy(
+                        landings =
+                            landings.toMutableList().apply {
+                                removeAt(event.index)
+                            },
+                    )
+                }
             }
         }
     }
