@@ -66,6 +66,7 @@ import domain.model.Landing
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
 import ui.components.TimePickerDialog
+import ui.screens.chooseAirportCodeDialog.ChooseAirportCodeDialog
 import ui.utils.formatDayMonthYear
 import ui.utils.formatHourMinute
 
@@ -256,6 +257,21 @@ private fun LandingCard(
                 ),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
+            val showDialog =
+                remember {
+                    mutableStateOf(false)
+                }
+            ChooseAirportCodeDialog(
+                show = showDialog.value,
+                onDismiss = {
+                    showDialog.value = false
+                },
+                onAirportCodeSelected = {
+                    onLandingChange(landing.copy(airportCode = it))
+                    showDialog.value = false
+                },
+                initialAirportCode = landing.airportCode,
+            )
             Row(
                 modifier =
                     Modifier
@@ -264,6 +280,7 @@ private fun LandingCard(
                         .clip(shape = RoundedCornerShape(size = 16.dp))
                         .widthIn(min = 150.dp)
                         .clickable {
+                            showDialog.value = true
                         }
                         .padding(
                             vertical = 4.dp,

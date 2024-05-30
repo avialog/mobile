@@ -146,11 +146,13 @@ class AddLogbookComponent(
 
             is AddLogbookEvent.LandingChange -> {
                 updateState {
+                    val newLandings =
+                        landings.toMutableList().apply {
+                            this[event.index] = event.newLanding
+                        }
                     copy(
-                        landings =
-                            landings.toMutableList().apply {
-                                this[event.index] = event.newLanding
-                            },
+                        landings = newLandings,
+                        landingAirportCode = newLandings.last().airportCode,
                     )
                 }
             }
