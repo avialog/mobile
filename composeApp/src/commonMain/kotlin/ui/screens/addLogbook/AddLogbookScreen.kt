@@ -2,6 +2,7 @@ package ui.screens.addLogbook
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -39,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
@@ -239,7 +242,7 @@ private fun LandingCard(
     onRemoveLanding: () -> Unit,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(space = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
         modifier =
             Modifier
                 .shadow(
@@ -257,7 +260,15 @@ private fun LandingCard(
                 modifier =
                     Modifier
                         .align(alignment = Alignment.TopCenter)
-                        .padding(top = 16.dp),
+                        .padding(top = 8.dp)
+                        .clip(shape = RoundedCornerShape(size = 16.dp))
+                        .widthIn(min = 150.dp)
+                        .clickable {
+                        }
+                        .padding(
+                            vertical = 4.dp,
+                            horizontal = 24.dp,
+                        ),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -268,7 +279,7 @@ private fun LandingCard(
                     tint = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = landing.airportCode.ifEmpty { "..." },
+                    text = landing.airportCode.ifEmpty { "Kliknij aby wpisać..." },
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
