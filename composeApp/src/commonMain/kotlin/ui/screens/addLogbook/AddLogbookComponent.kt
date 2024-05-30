@@ -12,6 +12,7 @@ import domain.model.ApproachType
 import domain.model.Landing
 import domain.model.Style
 import domain.useCase.airplane.GetAirplanes
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.kodein.di.instance
@@ -55,6 +56,7 @@ class AddLogbookComponent(
                             count = 0,
                             dayCount = 0,
                             nightCount = 0,
+                            id = 0,
                         ),
                     ),
                 passengers = listOf(),
@@ -62,7 +64,9 @@ class AddLogbookComponent(
                 airplane = null,
             ),
     ) {
+    private val landingsCreatedCounter = atomic(0)
     private val chooseAirplaneSlotNavigation = SlotNavigation<ChooseAirplaneConfiguration>()
+
     val chooseAirplaneSlot =
         childSlot(
             source = chooseAirplaneSlotNavigation,
@@ -85,8 +89,8 @@ class AddLogbookComponent(
                 logger = logger,
             )
         }
-
     private val errorNotificationChannel = Channel<Unit>(Channel.UNLIMITED)
+
     val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
 
     override fun onNewEvent(event: AddLogbookEvent) {
@@ -155,14 +159,17 @@ class AddLogbookComponent(
                 updateState {
                     copy(
                         landings =
-                            landings +
+                            listOf(
                                 Landing(
                                     airportCode = "",
                                     approachType = ApproachType.VISUAL,
                                     count = 0,
                                     dayCount = 0,
                                     nightCount = 0,
+                                    id = landingsCreatedCounter.incrementAndGet(),
                                 ),
+                                *landings.toTypedArray(),
+                            ),
                     )
                 }
             }

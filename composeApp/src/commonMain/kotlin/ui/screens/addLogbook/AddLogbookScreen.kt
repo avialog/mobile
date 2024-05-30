@@ -1,20 +1,24 @@
 package ui.screens.addLogbook
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
@@ -129,32 +133,40 @@ private fun Content(
     onNewEvent: (AddLogbookEvent) -> Unit,
     modifier: Modifier,
 ) {
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
-        modifier =
-            modifier.verticalScroll(state = rememberScrollState())
-                .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        modifier = modifier,
     ) {
-        DatesRow(
-            state = state,
-            onNewEvent = onNewEvent,
-        )
-        TimesRow(
-            state = state,
-            onNewEvent = onNewEvent,
-        )
-        AirportInputsRow(
-            state = state,
-            onNewEvent = onNewEvent,
-        )
-        AirplaneCard(
-            airplane = state.airplane,
-            onAirplaneClick = {
-                onNewEvent(AddLogbookEvent.ChooseAirplaneClick)
-            },
-            moreActions = null,
-            textIfAirplaneNull = "Wybierz samolot",
-        )
+        item {
+            DatesRow(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            TimesRow(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            AirportInputsRow(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            AirplaneCard(
+                airplane = state.airplane,
+                onAirplaneClick = {
+                    onNewEvent(AddLogbookEvent.ChooseAirplaneClick)
+                },
+                moreActions = null,
+                textIfAirplaneNull = "Wybierz samolot",
+            )
+        }
+
         Landings(
             state = state,
             onNewEvent = onNewEvent,
@@ -162,18 +174,26 @@ private fun Content(
     }
 }
 
-@Composable
-private fun Landings(
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.Landings(
     state: AddLogbookState,
     onNewEvent: (AddLogbookEvent) -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(space = 2.dp)) {
+    item {
         Text(
             text = "Lądowania",
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.secondary,
         )
-        state.landings.forEachIndexed { index, landing ->
+    }
+    itemsIndexed(
+        state.landings,
+        key = { index, landing ->
+            landing.id
+        },
+    ) {
+            index, landing ->
+        Column(modifier = Modifier.animateItemPlacement()) {
             LandingCard(
                 landing = landing,
                 onLandingChange = {
@@ -189,17 +209,22 @@ private fun Landings(
                     imageVector = FontAwesomeIcons.Solid.ArrowDown,
                     contentDescription = null,
                     modifier =
-                        Modifier.align(Alignment.CenterHorizontally)
+                        Modifier.fillParentMaxWidth()
+                            .wrapContentWidth(align = Alignment.CenterHorizontally)
                             .padding(vertical = 4.dp)
                             .size(size = 16.dp),
                 )
             }
         }
+    }
+    item {
         TextButton(
             onClick = {
                 onNewEvent(AddLogbookEvent.AddLandingClick)
             },
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier =
+                Modifier.fillParentMaxWidth()
+                    .wrapContentWidth(align = Alignment.CenterHorizontally),
         ) {
             Text(text = "+ Dodaj lądowanie")
         }
