@@ -24,9 +24,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +65,8 @@ import compose.icons.fontawesomeicons.solid.PlaneArrival
 import compose.icons.fontawesomeicons.solid.PlaneDeparture
 import compose.icons.fontawesomeicons.solid.Plus
 import domain.model.Landing
+import domain.model.Passenger
+import domain.model.Role
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
 import ui.components.TimePickerDialog
@@ -175,6 +179,99 @@ private fun Content(
             state = state,
             onNewEvent = onNewEvent,
         )
+
+        item {
+            Passengers(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Passengers(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+    ) {
+        Text(
+            text = "Załoga",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        Column(
+            modifier =
+                Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        spotColor = Color(0x40000000),
+                        ambientColor = Color(0x40000000),
+                    )
+                    .background(
+                        color = Color(0xFFFFFFFF),
+                        shape = RoundedCornerShape(size = 8.dp),
+                    ),
+        ) {
+            state.passengers.forEachIndexed { index, passenger ->
+                PassengerRow(
+                    passenger = passenger,
+                    /*onDeleteClick = {
+                        // onNewEvent(AddLogbookEvent.RemovePassengerClick(it))
+                    },*/
+                )
+                if (index != state.passengers.lastIndex) {
+                    HorizontalDivider()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PassengerRow(
+    passenger: Passenger,
+    onDeleteClick: (() -> Unit)? = null,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(space = 10.dp)) {
+        PassengerRoleBox(role = passenger.role)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+            modifier = Modifier.weight(weight = 1f),
+        ) {
+            Text(
+                text = passenger.firstName,
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Text(
+                text = "Captain",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        if (onDeleteClick != null) {
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PassengerRoleBox(role: Role) {
+    Box(
+        modifier =
+            Modifier.size(size = 31.dp)
+                .background(
+                    color = Color.Red,
+                    shape = RoundedCornerShape(size = 4.dp),
+                ),
+    ) {
+        Text("PP")
     }
 }
 
