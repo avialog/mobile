@@ -26,6 +26,7 @@ data class AddLogbookRequestDto(
     @SerialName("landings") val landings: List<LandingEntryDto>,
     @SerialName("passengers") val passengers: List<PassengerEntryDto>,
     @SerialName("style") val style: StyleDto,
+    @SerialName("my_role") val myRole: RoleDto,
 )
 
 @Serializable

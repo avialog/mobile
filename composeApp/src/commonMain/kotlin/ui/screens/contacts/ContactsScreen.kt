@@ -164,13 +164,13 @@ private fun CharacterSectionHeader(character: String) {
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .shadow(
                     elevation = 1.dp,
                     spotColor = Color.DarkGray,
                     shape = RectangleShape,
-                )
-                .background(color = MaterialTheme.colorScheme.background)
+                ).background(color = MaterialTheme.colorScheme.background)
                 .padding(vertical = 8.dp),
     ) {
         Text(
@@ -189,11 +189,11 @@ private fun ContactItem(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier =
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .clickable {
                     onNewEvent(ContactsEvent.ContactClick(contact = contact))
-                }
-                .padding(all = 16.dp),
+                }.padding(all = 16.dp),
     ) {
         Avatar(photoUrl = contact.avatarUrl)
         NameAndSurnameColumn(

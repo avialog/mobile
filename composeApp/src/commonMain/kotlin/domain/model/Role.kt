@@ -1,5 +1,7 @@
 package domain.model
 
+import androidx.compose.ui.graphics.Color
+
 enum class Role {
     PIC,
     SIC,
@@ -11,3 +13,5 @@ enum class Role {
     ATT,
     OTH,
 }
+
+internal fun Role.toBoxColor(): Color = Color.Red

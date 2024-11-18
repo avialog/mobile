@@ -3,6 +3,7 @@ package ui.screens.addLogbook
 import domain.model.Airplane
 import domain.model.Landing
 import domain.model.Passenger
+import domain.model.Role
 import domain.model.Style
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
@@ -32,6 +33,7 @@ data class AddLogbookState(
     val passengers: List<Passenger>,
     val style: Style,
     val airplane: Airplane?,
+    val myRole: Role,
 )
 
 sealed interface AddLogbookEvent {
@@ -39,23 +41,46 @@ sealed interface AddLogbookEvent {
 
     data object SaveClick : AddLogbookEvent
 
-    data class TakeOffDateChange(val newDate: LocalDate?) : AddLogbookEvent
+    data class TakeOffDateChange(
+        val newDate: LocalDate?,
+    ) : AddLogbookEvent
 
-    data class LandingDateChange(val newDate: LocalDate?) : AddLogbookEvent
+    data class LandingDateChange(
+        val newDate: LocalDate?,
+    ) : AddLogbookEvent
 
-    data class TakeOffTimeChange(val newTime: LocalTime?) : AddLogbookEvent
+    data class TakeOffTimeChange(
+        val newTime: LocalTime?,
+    ) : AddLogbookEvent
 
-    data class LandingTimeChange(val newTime: LocalTime?) : AddLogbookEvent
+    data class LandingTimeChange(
+        val newTime: LocalTime?,
+    ) : AddLogbookEvent
 
-    data class TakeOffAirportChange(val newAirport: String) : AddLogbookEvent
+    data class TakeOffAirportChange(
+        val newAirport: String,
+    ) : AddLogbookEvent
 
-    data class LandingAirportChange(val newAirport: String) : AddLogbookEvent
+    data class LandingAirportChange(
+        val newAirport: String,
+    ) : AddLogbookEvent
 
     data object ChooseAirplaneClick : AddLogbookEvent
 
-    data class LandingChange(val index: Int, val newLanding: Landing) : AddLogbookEvent
+    data class LandingChange(
+        val index: Int,
+        val newLanding: Landing,
+    ) : AddLogbookEvent
 
     data object AddLandingClick : AddLogbookEvent
 
-    data class RemoveLandingClick(val index: Int) : AddLogbookEvent
+    data class RemoveLandingClick(
+        val index: Int,
+    ) : AddLogbookEvent
+
+    data object AddPassengerClick : AddLogbookEvent
+
+    data class RemovePassengerClick(
+        val index: Int,
+    ) : AddLogbookEvent
 }

@@ -67,6 +67,7 @@ import compose.icons.fontawesomeicons.solid.Plus
 import domain.model.Landing
 import domain.model.Passenger
 import domain.model.Role
+import domain.model.toBoxColor
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
 import ui.components.TimePickerDialog
@@ -126,8 +127,10 @@ fun AddLogbookScreen(
                 },
                 shape = RoundedCornerShape(size = 4.dp),
                 modifier =
-                    Modifier.padding(all = 16.dp)
-                        .heightIn(min = 54.dp).fillMaxWidth(),
+                    Modifier
+                        .padding(all = 16.dp)
+                        .heightIn(min = 54.dp)
+                        .fillMaxWidth(),
             ) {
                 Text(text = "Dodaj lot")
             }
@@ -203,28 +206,48 @@ private fun Passengers(
             color = MaterialTheme.colorScheme.secondary,
         )
         Column(
+            verticalArrangement = Arrangement.spacedBy(space = 10.dp),
             modifier =
                 Modifier
                     .shadow(
                         elevation = 4.dp,
                         spotColor = Color(0x40000000),
                         ambientColor = Color(0x40000000),
-                    )
-                    .background(
+                    ).background(
                         color = Color(0xFFFFFFFF),
                         shape = RoundedCornerShape(size = 8.dp),
-                    ),
+                    ).padding(horizontal = 16.dp),
         ) {
+            PassengerRow(
+                passenger =
+                    Passenger(
+                        company = null,
+                        emailAddress = "",
+                        firstName = "Ty",
+                        lastName = null,
+                        note = null,
+                        phone = null,
+                        role = state.myRole,
+                    ),
+            )
+            HorizontalDivider()
             state.passengers.forEachIndexed { index, passenger ->
                 PassengerRow(
                     passenger = passenger,
-                    /*onDeleteClick = {
-                        // onNewEvent(AddLogbookEvent.RemovePassengerClick(it))
-                    },*/
+                    onDeleteClick = {
+                        onNewEvent(AddLogbookEvent.RemovePassengerClick(index = index))
+                    },
                 )
-                if (index != state.passengers.lastIndex) {
-                    HorizontalDivider()
-                }
+                HorizontalDivider()
+            }
+
+            TextButton(
+                onClick = {
+                    onNewEvent(AddLogbookEvent.AddPassengerClick)
+                },
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            ) {
+                Text(text = "+ Dodaj załogę")
             }
         }
     }
@@ -233,9 +256,14 @@ private fun Passengers(
 @Composable
 private fun PassengerRow(
     passenger: Passenger,
+    modifier: Modifier = Modifier,
     onDeleteClick: (() -> Unit)? = null,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(space = 10.dp)) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(space = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
         PassengerRoleBox(role = passenger.role)
         Column(
             verticalArrangement = Arrangement.spacedBy(space = 4.dp),
@@ -265,13 +293,19 @@ private fun PassengerRow(
 private fun PassengerRoleBox(role: Role) {
     Box(
         modifier =
-            Modifier.size(size = 31.dp)
+            Modifier
+                .size(size = 31.dp)
                 .background(
-                    color = Color.Red,
+                    color = role.toBoxColor(),
                     shape = RoundedCornerShape(size = 4.dp),
                 ),
+        contentAlignment = Alignment.Center,
     ) {
-        Text("PP")
+        Text(
+            text = role.name,
+            color = Color.White,
+            style = MaterialTheme.typography.titleSmall,
+        )
     }
 }
 
@@ -292,8 +326,7 @@ private fun LazyListScope.Landings(
         key = { index, landing ->
             landing.id
         },
-    ) {
-            index, landing ->
+    ) { index, landing ->
         Column(modifier = Modifier.animateItemPlacement()) {
             LandingCard(
                 landing = landing,
@@ -310,7 +343,8 @@ private fun LazyListScope.Landings(
                     imageVector = FontAwesomeIcons.Solid.ArrowDown,
                     contentDescription = null,
                     modifier =
-                        Modifier.fillParentMaxWidth()
+                        Modifier
+                            .fillParentMaxWidth()
                             .wrapContentWidth(align = Alignment.CenterHorizontally)
                             .padding(vertical = 4.dp)
                             .size(size = 16.dp),
@@ -324,7 +358,8 @@ private fun LazyListScope.Landings(
                 onNewEvent(AddLogbookEvent.AddLandingClick)
             },
             modifier =
-                Modifier.fillParentMaxWidth()
+                Modifier
+                    .fillParentMaxWidth()
                     .wrapContentWidth(align = Alignment.CenterHorizontally),
         ) {
             Text(text = "+ Dodaj lądowanie")
@@ -347,8 +382,7 @@ private fun LandingCard(
                     elevation = 4.dp,
                     spotColor = Color(0x40000000),
                     ambientColor = Color(0x40000000),
-                )
-                .background(
+                ).background(
                     color = Color(0xFFFFFFFF),
                     shape = RoundedCornerShape(size = 8.dp),
                 ),
@@ -378,8 +412,7 @@ private fun LandingCard(
                         .widthIn(min = 150.dp)
                         .clickable {
                             showDialog.value = true
-                        }
-                        .padding(
+                        }.padding(
                             vertical = 4.dp,
                             horizontal = 24.dp,
                         ),
@@ -419,7 +452,8 @@ private fun LandingCard(
             horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier =
-                Modifier.padding(horizontal = 16.dp)
+                Modifier
+                    .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
         ) {
             Icon(

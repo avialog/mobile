@@ -10,6 +10,7 @@ import com.arkivanov.decompose.router.slot.dismiss
 import di.di
 import domain.model.ApproachType
 import domain.model.Landing
+import domain.model.Role
 import domain.model.Style
 import domain.useCase.airplane.GetAirplanes
 import kotlinx.atomicfu.atomic
@@ -62,6 +63,7 @@ class AddLogbookComponent(
                 passengers = listOf(),
                 style = Style.IFR,
                 airplane = null,
+                myRole = Role.PIC,
             ),
     ) {
     private val landingsCreatedCounter = atomic(0)
@@ -186,6 +188,18 @@ class AddLogbookComponent(
                     )
                 }
             }
+
+            is AddLogbookEvent.RemovePassengerClick ->
+                updateState {
+                    copy(
+                        passengers =
+                            passengers.toMutableList().apply {
+                                removeAt(event.index)
+                            },
+                    )
+                }
+
+            AddLogbookEvent.AddPassengerClick -> {}
         }
     }
 }
