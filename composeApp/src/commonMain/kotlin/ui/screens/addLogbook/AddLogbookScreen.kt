@@ -67,9 +67,10 @@ import compose.icons.fontawesomeicons.solid.Plus
 import domain.model.Landing
 import domain.model.Passenger
 import domain.model.Role
-import domain.model.toBoxColor
+import ui.components.ActionListItem
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
+import ui.components.RoleBox
 import ui.components.TimePickerDialog
 import ui.screens.chooseAirportCodeDialog.ChooseAirportCodeDialog
 import ui.utils.formatDayMonthYear
@@ -241,14 +242,30 @@ private fun Passengers(
                 HorizontalDivider()
             }
 
+            val showRolesBottomSheet =
+                remember {
+                    mutableStateOf(false)
+                }
+
             TextButton(
                 onClick = {
-                    onNewEvent(AddLogbookEvent.AddPassengerClick)
+                    showRolesBottomSheet.value = true
                 },
                 modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
             ) {
                 Text(text = "+ Dodaj załogę")
             }
+
+            ChooseRoleBottomSheet(
+                show = showRolesBottomSheet.value,
+                roles = Role.entries,
+                selectedRole = null,
+                onChooseRole = {
+                },
+                onDismiss = {
+                    showRolesBottomSheet.value = false
+                },
+            )
         }
     }
 }
@@ -256,57 +273,25 @@ private fun Passengers(
 @Composable
 private fun PassengerRow(
     passenger: Passenger,
-    modifier: Modifier = Modifier,
     onDeleteClick: (() -> Unit)? = null,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(space = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
-    ) {
-        PassengerRoleBox(role = passenger.role)
-        Column(
-            verticalArrangement = Arrangement.spacedBy(space = 4.dp),
-            modifier = Modifier.weight(weight = 1f),
-        ) {
-            Text(
-                text = passenger.firstName,
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                text = "Captain",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-        if (onDeleteClick != null) {
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = null,
-                )
+    ActionListItem(
+        title = passenger.firstName,
+        subtitle = "Captain",
+        leading = {
+            RoleBox(role = passenger.role)
+        },
+        trailing = {
+            if (onDeleteClick != null) {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = null,
+                    )
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun PassengerRoleBox(role: Role) {
-    Box(
-        modifier =
-            Modifier
-                .size(size = 31.dp)
-                .background(
-                    color = role.toBoxColor(),
-                    shape = RoundedCornerShape(size = 4.dp),
-                ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = role.name,
-            color = Color.White,
-            style = MaterialTheme.typography.titleSmall,
-        )
-    }
+        },
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
