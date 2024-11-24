@@ -82,6 +82,10 @@ sealed interface AddLogbookEvent {
         val role: Role,
     ) : AddLogbookEvent
 
+    data class ChangeMyRoleClick(
+        val role: Role,
+    ) : AddLogbookEvent
+
     data class RemovePassengerClick(
         val index: Int,
     ) : AddLogbookEvent

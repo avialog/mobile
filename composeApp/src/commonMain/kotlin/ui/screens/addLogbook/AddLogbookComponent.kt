@@ -233,6 +233,12 @@ class AddLogbookComponent(
                     AddLogbookSlotConfiguration.ChooseContactConfiguration(role = event.role),
                 )
             }
+
+            is AddLogbookEvent.ChangeMyRoleClick -> {
+                updateState {
+                    copy(myRole = event.role)
+                }
+            }
         }
     }
 

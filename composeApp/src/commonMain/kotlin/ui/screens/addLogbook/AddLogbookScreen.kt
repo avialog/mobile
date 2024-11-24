@@ -219,6 +219,10 @@ private fun Passengers(
                         shape = RoundedCornerShape(size = 8.dp),
                     ).padding(horizontal = 16.dp),
         ) {
+            val showMyRoleBottomSheet =
+                remember {
+                    mutableStateOf(false)
+                }
             PassengerRow(
                 passenger =
                     Passenger(
@@ -230,7 +234,24 @@ private fun Passengers(
                         phone = null,
                         role = state.myRole,
                     ),
+                onClick = {
+                    showMyRoleBottomSheet.value = true
+                },
             )
+
+            ChooseRoleBottomSheet(
+                show = showMyRoleBottomSheet.value,
+                roles = Role.entries,
+                selectedRole = state.myRole,
+                onChooseRole = {
+                    showMyRoleBottomSheet.value = false
+                    onNewEvent(AddLogbookEvent.ChangeMyRoleClick(role = it))
+                },
+                onDismiss = {
+                    showMyRoleBottomSheet.value = false
+                },
+            )
+
             HorizontalDivider()
             state.passengers.forEachIndexed { index, passenger ->
                 PassengerRow(
@@ -274,6 +295,7 @@ private fun Passengers(
 @Composable
 private fun PassengerRow(
     passenger: Passenger,
+    onClick: (() -> Unit)? = null,
     onDeleteClick: (() -> Unit)? = null,
 ) {
     ActionListItem(
@@ -292,6 +314,7 @@ private fun PassengerRow(
                 }
             }
         },
+        onClick = onClick,
     )
 }
 
