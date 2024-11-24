@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -191,7 +192,69 @@ private fun Content(
                 onNewEvent = onNewEvent,
             )
         }
+
+        item {
+            Remarks(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+
+        item {
+            PersonalRemarks(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
     }
+}
+
+@Composable
+fun Remarks(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    OutlinedTextField(
+        value = state.remarks,
+        label = {
+            Text(text = "Uwagi")
+        },
+        onValueChange = {
+            onNewEvent(AddLogbookEvent.RemarksChange(it))
+        },
+        singleLine = false,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+fun PersonalRemarks(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    OutlinedTextField(
+        value = state.personalRemarks,
+        label = {
+            Text(text = "Notatki personalne (nie znajdą się w raporcie)")
+        },
+        onValueChange = {
+            onNewEvent(AddLogbookEvent.PersonalRemarksChange(it))
+        },
+        singleLine = false,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable

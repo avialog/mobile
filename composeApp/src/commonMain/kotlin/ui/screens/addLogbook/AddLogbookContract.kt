@@ -89,4 +89,12 @@ sealed interface AddLogbookEvent {
     data class RemovePassengerClick(
         val index: Int,
     ) : AddLogbookEvent
+
+    data class RemarksChange(
+        val newRemarks: String,
+    ) : AddLogbookEvent
+
+    data class PersonalRemarksChange(
+        val newRemarks: String,
+    ) : AddLogbookEvent
 }

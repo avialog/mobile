@@ -239,6 +239,15 @@ class AddLogbookComponent(
                     copy(myRole = event.role)
                 }
             }
+
+            is AddLogbookEvent.PersonalRemarksChange ->
+                updateState {
+                    copy(personalRemarks = event.newRemarks)
+                }
+            is AddLogbookEvent.RemarksChange ->
+                updateState {
+                    copy(remarks = event.newRemarks)
+                }
         }
     }
 

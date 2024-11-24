@@ -87,8 +87,7 @@ private fun ProfileCard(
                     width = 1.dp,
                     color = Color(0xFFC0C9C0),
                     shape = RoundedCornerShape(size = 8.dp),
-                )
-                .padding(all = 24.dp),
+                ).padding(all = 24.dp),
     ) {
         when (profileResource) {
             is Resource.Error -> {
@@ -234,7 +233,7 @@ private fun SettingsSection(onNewEvent: (ProfileEvent) -> Unit) {
             icon = FontAwesomeIcons.Solid.User,
             title = "Dane osobowe",
             onClick = {
-                onNewEvent(ProfileEvent.PlanesClick)
+                onNewEvent(ProfileEvent.UserDataClick)
             },
         )
         HorizontalDivider()
