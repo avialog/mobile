@@ -9,16 +9,19 @@ import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import di.di
 import domain.model.ApproachType
+import domain.model.Contact
 import domain.model.Landing
+import domain.model.Passenger
 import domain.model.Role
 import domain.model.Style
+import domain.useCase.GetContacts
 import domain.useCase.airplane.GetAirplanes
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.kodein.di.instance
 import ui.screens.chooseAirplane.ChooseAirplaneComponent
-import ui.screens.chooseAirplane.ChooseAirplaneConfiguration
+import ui.screens.chooseContact.ChooseContactComponent
 
 private const val MAX_AIRPORT_CODE_LENGTH = 5
 
@@ -67,30 +70,56 @@ class AddLogbookComponent(
             ),
     ) {
     private val landingsCreatedCounter = atomic(0)
-    private val chooseAirplaneSlotNavigation = SlotNavigation<ChooseAirplaneConfiguration>()
+    private val chooseAirplaneSlotNavigation = SlotNavigation<AddLogbookSlotConfiguration>()
 
-    val chooseAirplaneSlot =
+    val addLogbookChildSlot =
         childSlot(
             source = chooseAirplaneSlotNavigation,
-            serializer = ChooseAirplaneConfiguration.serializer(),
+            serializer = AddLogbookSlotConfiguration.serializer(),
             handleBackButton = true,
-        ) { _, childComponentContext ->
-            val getAirplanes: GetAirplanes by di.instance()
-            ChooseAirplaneComponent(
-                componentContext = childComponentContext,
-                getAirplanes = getAirplanes,
-                onAirplaneChosen = {
-                    updateState {
-                        copy(airplane = it)
-                    }
-                    chooseAirplaneSlotNavigation.dismiss()
-                },
-                onNavigateBack = {
-                    chooseAirplaneSlotNavigation.dismiss()
-                },
-                logger = logger,
-            )
+        ) { configuration, childComponentContext ->
+            when (configuration) {
+                AddLogbookSlotConfiguration.ChooseAirplaneConfiguration -> {
+                    val getAirplanes: GetAirplanes by di.instance()
+                    ChooseAirplaneComponent(
+                        componentContext = childComponentContext,
+                        getAirplanes = getAirplanes,
+                        onAirplaneChosen = {
+                            updateState {
+                                copy(airplane = it)
+                            }
+                            chooseAirplaneSlotNavigation.dismiss()
+                        },
+                        onNavigateBack = {
+                            chooseAirplaneSlotNavigation.dismiss()
+                        },
+                        logger = logger,
+                    )
+                }
+                is AddLogbookSlotConfiguration.ChooseContactConfiguration -> {
+                    val getContacts: GetContacts by di.instance()
+                    ChooseContactComponent(
+                        componentContext = childComponentContext,
+                        getContacts = getContacts,
+                        onNavigateBack = {
+                            chooseAirplaneSlotNavigation.dismiss()
+                        },
+                        logger = logger,
+                        onChooseContact = { newContact ->
+                            chooseAirplaneSlotNavigation.dismiss()
+                            updateState {
+                                copy(
+                                    passengers =
+                                        passengers +
+                                            newContact.toPassenger(role = configuration.role),
+                                )
+                            }
+                        },
+                    )
+                }
+            }
         }
+
     private val errorNotificationChannel = Channel<Unit>(Channel.UNLIMITED)
 
     val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
@@ -143,7 +172,7 @@ class AddLogbookComponent(
             }
 
             AddLogbookEvent.ChooseAirplaneClick -> {
-                chooseAirplaneSlotNavigation.activate(ChooseAirplaneConfiguration)
+                chooseAirplaneSlotNavigation.activate(AddLogbookSlotConfiguration.ChooseAirplaneConfiguration)
             }
 
             is AddLogbookEvent.LandingChange -> {
@@ -199,7 +228,22 @@ class AddLogbookComponent(
                     )
                 }
 
-            AddLogbookEvent.AddPassengerClick -> {}
+            is AddLogbookEvent.AddPassengerClick -> {
+                chooseAirplaneSlotNavigation.activate(
+                    AddLogbookSlotConfiguration.ChooseContactConfiguration(role = event.role),
+                )
+            }
         }
     }
+
+    private fun Contact.toPassenger(role: Role): Passenger =
+        Passenger(
+            firstName = firstName,
+            lastName = lastName,
+            emailAddress = emailAddress,
+            phone = phone,
+            company = company,
+            note = note,
+            role = role,
+        )
 }

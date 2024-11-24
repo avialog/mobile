@@ -143,7 +143,7 @@ fun AddLogbookScreen(
 private fun Content(
     state: AddLogbookState,
     onNewEvent: (AddLogbookEvent) -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
@@ -261,6 +261,7 @@ private fun Passengers(
                 roles = Role.entries,
                 selectedRole = null,
                 onChooseRole = {
+                    onNewEvent(AddLogbookEvent.AddPassengerClick(role = it))
                 },
                 onDismiss = {
                     showRolesBottomSheet.value = false

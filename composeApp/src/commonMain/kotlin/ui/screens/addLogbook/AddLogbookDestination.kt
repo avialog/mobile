@@ -9,16 +9,28 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import kotlinx.coroutines.flow.map
 import ui.components.InfoNotificationHandle
 import ui.components.InfoNotificationParams
+import ui.screens.chooseAirplane.ChooseAirplaneComponent
 import ui.screens.chooseAirplane.ChooseAirplaneDestination
+import ui.screens.chooseContact.ChooseContactComponent
+import ui.screens.chooseContact.ChooseContactDestination
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun AddLogbookDestination(addLogbookComponent: AddLogbookComponent) {
     Column {
         val chooseAirplaneSlot by
-            addLogbookComponent.chooseAirplaneSlot.subscribeAsState()
-        chooseAirplaneSlot.child?.instance?.let {
-            ChooseAirplaneDestination(chooseAirplaneComponent = it)
+            addLogbookComponent.addLogbookChildSlot.subscribeAsState()
+        chooseAirplaneSlot.child?.instance?.let { component ->
+            when (component) {
+                is ChooseAirplaneComponent ->
+                    ChooseAirplaneDestination(
+                        chooseAirplaneComponent = component,
+                    )
+                is ChooseContactComponent ->
+                    ChooseContactDestination(
+                        chooseContactComponent = component,
+                    )
+            }
         }
 
         val messagesChannelFlow =
