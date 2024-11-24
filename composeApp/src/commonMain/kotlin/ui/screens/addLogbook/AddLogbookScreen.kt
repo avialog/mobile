@@ -67,6 +67,7 @@ import compose.icons.fontawesomeicons.solid.Plus
 import domain.model.Landing
 import domain.model.Passenger
 import domain.model.Role
+import domain.model.fullName
 import ui.components.ActionListItem
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
@@ -299,8 +300,8 @@ private fun PassengerRow(
     onDeleteClick: (() -> Unit)? = null,
 ) {
     ActionListItem(
-        title = passenger.firstName,
-        subtitle = "Captain",
+        title = passenger.fullName,
+        subtitle = passenger.role.friendlyName,
         leading = {
             RoleBox(role = passenger.role)
         },

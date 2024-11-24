@@ -46,7 +46,7 @@ internal fun ChooseRoleBottomSheet(
             )
             roles.forEachIndexed { index, role ->
                 ActionListItem(
-                    title = role.name,
+                    title = role.friendlyName,
                     leading = {
                         RoleBox(role = role)
                     },

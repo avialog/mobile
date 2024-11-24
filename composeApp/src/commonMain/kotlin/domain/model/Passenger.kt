@@ -9,3 +9,5 @@ data class Passenger(
     val phone: String?,
     val role: Role,
 )
+
+val Passenger.fullName get() = "$firstName ${lastName ?: ""}".trim()

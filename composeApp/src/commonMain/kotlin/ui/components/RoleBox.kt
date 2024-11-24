@@ -19,7 +19,7 @@ fun RoleBox(role: Role) {
     Box(
         modifier =
             Modifier
-                .size(size = 31.dp)
+                .size(size = 36.dp)
                 .background(
                     color = role.toBoxColor(),
                     shape = RoundedCornerShape(size = 4.dp),
