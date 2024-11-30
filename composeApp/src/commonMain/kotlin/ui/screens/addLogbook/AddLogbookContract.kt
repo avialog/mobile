@@ -97,4 +97,8 @@ sealed interface AddLogbookEvent {
     data class PersonalRemarksChange(
         val newRemarks: String,
     ) : AddLogbookEvent
+
+    data class StyleChange(
+        val style: Style,
+    ) : AddLogbookEvent
 }

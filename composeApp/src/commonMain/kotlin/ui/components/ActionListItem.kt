@@ -15,7 +15,7 @@ import ui.utils.clickableIfNotNull
 fun ActionListItem(
     title: String,
     subtitle: String? = null,
-    leading: @Composable () -> Unit,
+    leading: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
     trailing: @Composable () -> Unit = {},
     onClick: (() -> Unit)? = null,

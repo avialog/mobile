@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
@@ -68,6 +69,7 @@ import compose.icons.fontawesomeicons.solid.Plus
 import domain.model.Landing
 import domain.model.Passenger
 import domain.model.Role
+import domain.model.Style
 import domain.model.fullName
 import ui.components.ActionListItem
 import ui.components.AirplaneCard
@@ -206,7 +208,69 @@ private fun Content(
                 onNewEvent = onNewEvent,
             )
         }
+        item {
+            ChooseStyleCard(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
     }
+}
+
+@Composable
+fun ChooseStyleCard(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    val chooseStyleBottomSheetVisible =
+        remember {
+            mutableStateOf(false)
+        }
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+    ) {
+        Text(
+            text = "Styl",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+
+        OutlinedCard(
+            onClick = {
+                chooseStyleBottomSheetVisible.value = true
+            },
+        ) {
+            Row(
+                modifier =
+                    Modifier.padding(
+                        vertical = 16.dp,
+                        horizontal = 12.dp,
+                    ),
+            ) {
+                Text(
+                    text = state.style.name,
+                    modifier = Modifier.weight(weight = 1f),
+                )
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+
+    ChooseStyleBottomSheet(
+        show = chooseStyleBottomSheetVisible.value,
+        selectedStyle = state.style,
+        styles = Style.entries,
+        onChooseStyle = {
+            chooseStyleBottomSheetVisible.value = false
+            onNewEvent(AddLogbookEvent.StyleChange(style = it))
+        },
+        onDismiss = {
+            chooseStyleBottomSheetVisible.value = false
+        },
+    )
 }
 
 @Composable

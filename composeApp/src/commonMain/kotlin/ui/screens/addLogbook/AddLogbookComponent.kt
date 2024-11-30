@@ -248,6 +248,12 @@ class AddLogbookComponent(
                 updateState {
                     copy(remarks = event.newRemarks)
                 }
+
+            is AddLogbookEvent.StyleChange -> {
+                updateState {
+                    copy(style = event.style)
+                }
+            }
         }
     }
 
