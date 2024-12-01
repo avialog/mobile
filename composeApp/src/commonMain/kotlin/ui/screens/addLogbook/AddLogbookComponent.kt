@@ -211,6 +211,9 @@ class AddLogbookComponent(
                             if (it is Resource.Success) {
                                 onNavigateBack()
                             }
+                            if (it is Resource.Error) {
+                                errorNotificationChannel.trySend(Unit)
+                            }
                         }
                     }
                 }
