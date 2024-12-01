@@ -13,6 +13,8 @@ import ui.screens.chooseAirplane.ChooseAirplaneComponent
 import ui.screens.chooseAirplane.ChooseAirplaneDestination
 import ui.screens.chooseContact.ChooseContactComponent
 import ui.screens.chooseContact.ChooseContactDestination
+import ui.screens.editTimes.EditTimesComponent
+import ui.screens.editTimes.EditTimesDestination
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -29,6 +31,10 @@ fun AddLogbookDestination(addLogbookComponent: AddLogbookComponent) {
                 is ChooseContactComponent ->
                     ChooseContactDestination(
                         chooseContactComponent = component,
+                    )
+                is EditTimesComponent ->
+                    EditTimesDestination(
+                        editTimesComponent = component,
                     )
             }
         }

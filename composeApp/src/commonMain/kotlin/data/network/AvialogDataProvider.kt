@@ -26,6 +26,7 @@ import domain.model.Profile
 import domain.model.Role
 import domain.model.Style
 import io.ktor.http.HttpMethod
+import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
@@ -166,17 +167,17 @@ class AvialogDataProvider(
             body =
                 with(logbook) {
                     AddLogbookRequestDto(
-                        crossCountryTime = 0,
-                        dualGivenTime = 0,
-                        dualReceivedTime = 0,
-                        ifrActualTime = 0,
-                        ifrSimulatedTime = 0,
-                        ifrTime = 0,
-                        nightTime = 0,
-                        pilotInCommandTime = 0,
-                        secondInCommandTime = 0,
-                        simulatorTime = 0,
-                        totalBlockTime = 0,
+                        crossCountryTime = crossCountryTime.toWholeSeconds(),
+                        dualGivenTime = dualGivenTime.toWholeSeconds(),
+                        dualReceivedTime = dualReceivedTime.toWholeSeconds(),
+                        ifrActualTime = ifrActualTime.toWholeSeconds(),
+                        ifrSimulatedTime = ifrSimulatedTime.toWholeSeconds(),
+                        ifrTime = ifrTime.toWholeSeconds(),
+                        nightTime = nightTime.toWholeSeconds(),
+                        pilotInCommandTime = pilotInCommandTime.toWholeSeconds(),
+                        secondInCommandTime = secondInCommandTime.toWholeSeconds(),
+                        simulatorTime = simulatorTime.toWholeSeconds(),
+                        totalBlockTime = totalBlockTime.toWholeSeconds(),
                         landingAirportCode = landingAirportCode,
                         landingTime = landingDate.atTime(landingTime).toInstant(TimeZone.UTC).toString(),
                         personalRemarks = personalRemarks,
@@ -204,7 +205,7 @@ class AvialogDataProvider(
         LandingEntryDto(
             airportCode = airportCode,
             approachType = approachType.toDto(),
-            count = count,
+            count = dayCount + nightCount,
             dayCount = dayCount,
             nightCount = nightCount,
         )
@@ -246,4 +247,9 @@ class AvialogDataProvider(
             Style.Z -> StyleDto.Z
             Style.Z2 -> StyleDto.Z2
         }
+
+    private fun DateTimePeriod?.toWholeSeconds() =
+        this?.let {
+            hours * 3600L + minutes * 60L
+        } ?: 0L
 }

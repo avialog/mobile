@@ -250,7 +250,10 @@ fun TimesSection(
             color = MaterialTheme.colorScheme.secondary,
         )
 
-        FlowRow {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(space = 8.dp),
+        ) {
             TimeDisplay(time = state.totalBlockTime, title = "TOTAL")
             state.pilotInCommandTime?.let { TimeDisplay(time = it, title = "PIC") }
             state.secondInCommandTime?.let { TimeDisplay(time = it, title = "SIC") }
@@ -258,13 +261,16 @@ fun TimesSection(
             state.crossCountryTime?.let { TimeDisplay(time = it, title = "XC") }
             state.ifrTime?.let { TimeDisplay(time = it, title = "IFR") }
             state.dualGivenTime?.let { TimeDisplay(time = it, title = "DUAL") }
+            state.dualReceivedTime?.let { TimeDisplay(time = it, title = "DUAL RECEIVED") }
             state.ifrActualTime?.let { TimeDisplay(time = it, title = "IFR ACTUAL") }
             state.ifrSimulatedTime?.let { TimeDisplay(time = it, title = "IFR SIMULATED") }
             state.simulatorTime?.let { TimeDisplay(time = it, title = "SIMULATOR") }
         }
 
         TextButton(
-            onClick = {},
+            onClick = {
+                onNewEvent(AddLogbookEvent.TimesChangeClick)
+            },
             modifier =
                 Modifier.align(
                     alignment = Alignment.CenterHorizontally,
@@ -301,6 +307,7 @@ private fun TimeDisplay(
             text = title,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.secondary,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

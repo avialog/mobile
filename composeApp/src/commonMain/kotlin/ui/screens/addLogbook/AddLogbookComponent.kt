@@ -28,6 +28,7 @@ import org.kodein.di.instance
 import resourceFlow
 import ui.screens.chooseAirplane.ChooseAirplaneComponent
 import ui.screens.chooseContact.ChooseContactComponent
+import ui.screens.editTimes.EditTimesComponent
 
 private const val MAX_AIRPORT_CODE_LENGTH = 5
 
@@ -64,7 +65,6 @@ class AddLogbookComponent(
                         Landing(
                             airportCode = "",
                             approachType = ApproachType.VISUAL,
-                            count = 0,
                             dayCount = 0,
                             nightCount = 0,
                             id = 0,
@@ -123,6 +123,33 @@ class AddLogbookComponent(
                                 )
                             }
                         },
+                    )
+                }
+
+                is AddLogbookSlotConfiguration.ChooseTimesConfiguration -> {
+                    EditTimesComponent(
+                        componentContext = childComponentContext,
+                        onNavigateBack = { editTimesState ->
+                            chooseAirplaneSlotNavigation.dismiss()
+                            updateState {
+                                with(editTimesState) {
+                                    this@updateState.copy(
+                                        crossCountryTime = crossCountryTime,
+                                        dualGivenTime = dualGivenTime,
+                                        dualReceivedTime = dualReceivedTime,
+                                        ifrActualTime = ifrActualTime,
+                                        ifrSimulatedTime = ifrSimulatedTime,
+                                        ifrTime = ifrTime,
+                                        nightTime = nightTime,
+                                        pilotInCommandTime = pilotInCommandTime,
+                                        secondInCommandTime = secondInCommandTime,
+                                        simulatorTime = simulatorTime,
+                                        totalBlockTime = totalBlockTime,
+                                    )
+                                }
+                            }
+                        },
+                        configuration = configuration,
                     )
                 }
             }
@@ -254,7 +281,6 @@ class AddLogbookComponent(
                                 Landing(
                                     airportCode = "",
                                     approachType = ApproachType.VISUAL,
-                                    count = 0,
                                     dayCount = 0,
                                     nightCount = 0,
                                     id = landingsCreatedCounter.incrementAndGet(),
@@ -312,6 +338,25 @@ class AddLogbookComponent(
                     copy(style = event.style)
                 }
             }
+
+            AddLogbookEvent.TimesChangeClick ->
+                chooseAirplaneSlotNavigation.activate(
+                    with(actualState) {
+                        AddLogbookSlotConfiguration.ChooseTimesConfiguration(
+                            crossCountryTime = crossCountryTime,
+                            dualGivenTime = dualGivenTime,
+                            dualReceivedTime = dualReceivedTime,
+                            ifrActualTime = ifrActualTime,
+                            ifrSimulatedTime = ifrSimulatedTime,
+                            ifrTime = ifrTime,
+                            nightTime = nightTime,
+                            pilotInCommandTime = pilotInCommandTime,
+                            secondInCommandTime = secondInCommandTime,
+                            simulatorTime = simulatorTime,
+                            totalBlockTime = totalBlockTime,
+                        )
+                    },
+                )
         }
     }
 

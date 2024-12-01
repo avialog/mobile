@@ -103,4 +103,6 @@ sealed interface AddLogbookEvent {
     data class StyleChange(
         val style: Style,
     ) : AddLogbookEvent
+
+    data object TimesChangeClick : AddLogbookEvent
 }
