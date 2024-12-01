@@ -23,6 +23,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimePeriod
 import org.kodein.di.instance
 import resourceFlow
 import ui.screens.chooseAirplane.ChooseAirplaneComponent
@@ -49,7 +50,7 @@ class AddLogbookComponent(
                 pilotInCommandTime = null,
                 secondInCommandTime = null,
                 simulatorTime = null,
-                totalBlockTime = null,
+                totalBlockTime = DateTimePeriod(),
                 landingAirportCode = "",
                 landingTime = null,
                 landingDate = null,

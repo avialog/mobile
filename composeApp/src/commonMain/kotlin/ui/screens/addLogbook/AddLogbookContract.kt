@@ -21,7 +21,7 @@ data class AddLogbookState(
     val pilotInCommandTime: DateTimePeriod?,
     val secondInCommandTime: DateTimePeriod?,
     val simulatorTime: DateTimePeriod?,
-    val totalBlockTime: DateTimePeriod?,
+    val totalBlockTime: DateTimePeriod,
     val landingAirportCode: String,
     val takeOffAirportCode: String,
     val landingDate: LocalDate?,

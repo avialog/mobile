@@ -3,10 +3,13 @@ package ui.screens.addLogbook
 import Resource
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -73,6 +77,7 @@ import domain.model.Passenger
 import domain.model.Role
 import domain.model.Style
 import domain.model.fullName
+import kotlinx.datetime.DateTimePeriod
 import ui.components.ActionListItem
 import ui.components.AirplaneCard
 import ui.components.AvialogDatePicker
@@ -220,8 +225,87 @@ private fun Content(
                 onNewEvent = onNewEvent,
             )
         }
+        item {
+            TimesSection(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
     }
 }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TimesSection(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = "Czasy",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+
+        FlowRow {
+            TimeDisplay(time = state.totalBlockTime, title = "TOTAL")
+            state.pilotInCommandTime?.let { TimeDisplay(time = it, title = "PIC") }
+            state.secondInCommandTime?.let { TimeDisplay(time = it, title = "SIC") }
+            state.nightTime?.let { TimeDisplay(time = it, title = "NIGHT") }
+            state.crossCountryTime?.let { TimeDisplay(time = it, title = "XC") }
+            state.ifrTime?.let { TimeDisplay(time = it, title = "IFR") }
+            state.dualGivenTime?.let { TimeDisplay(time = it, title = "DUAL") }
+            state.ifrActualTime?.let { TimeDisplay(time = it, title = "IFR ACTUAL") }
+            state.ifrSimulatedTime?.let { TimeDisplay(time = it, title = "IFR SIMULATED") }
+            state.simulatorTime?.let { TimeDisplay(time = it, title = "SIMULATOR") }
+        }
+
+        TextButton(
+            onClick = {},
+            modifier =
+                Modifier.align(
+                    alignment = Alignment.CenterHorizontally,
+                ),
+        ) {
+            Text(text = "Modyfikuj czasy")
+        }
+    }
+}
+
+@Composable
+private fun TimeDisplay(
+    time: DateTimePeriod,
+    title: String,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier =
+            Modifier
+                .border(
+                    width = 6.dp,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape,
+                ).clip(CircleShape)
+                .padding(all = 24.dp),
+    ) {
+        Text(
+            text = "${time.hours.toTwoDigitString()}:${time.minutes.toTwoDigitString()}",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+    }
+}
+
+private fun Int.toTwoDigitString() = if (this < 10) "0$this" else "$this"
 
 @Composable
 fun ChooseStyleCard(
