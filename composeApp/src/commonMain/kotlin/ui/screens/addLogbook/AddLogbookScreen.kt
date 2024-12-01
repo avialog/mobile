@@ -1,5 +1,6 @@
 package ui.screens.addLogbook
 
+import Resource
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -137,7 +139,11 @@ fun AddLogbookScreen(
                         .heightIn(min = 54.dp)
                         .fillMaxWidth(),
             ) {
-                Text(text = "Dodaj lot")
+                if (state.requestState !is Resource.Loading) {
+                    Text(text = "Dodaj lot")
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                }
             }
         }
     }

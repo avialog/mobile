@@ -2,6 +2,7 @@ package ui.screens.addLogbook
 
 import BaseMviViewModel
 import ILogger
+import Resource
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
@@ -11,15 +12,19 @@ import di.di
 import domain.model.ApproachType
 import domain.model.Contact
 import domain.model.Landing
+import domain.model.Logbook
 import domain.model.Passenger
 import domain.model.Role
 import domain.model.Style
+import domain.useCase.AddLogbook
 import domain.useCase.GetContacts
 import domain.useCase.airplane.GetAirplanes
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import org.kodein.di.instance
+import resourceFlow
 import ui.screens.chooseAirplane.ChooseAirplaneComponent
 import ui.screens.chooseContact.ChooseContactComponent
 
@@ -28,6 +33,7 @@ private const val MAX_AIRPORT_CODE_LENGTH = 5
 class AddLogbookComponent(
     componentContext: ComponentContext,
     private val logger: ILogger,
+    private val addLogbook: AddLogbook,
     private val onNavigateBack: () -> Unit,
 ) : BaseMviViewModel<AddLogbookState, AddLogbookEvent>(
         componentContext = componentContext,
@@ -67,6 +73,7 @@ class AddLogbookComponent(
                 style = Style.IFR,
                 airplane = null,
                 myRole = Role.PIC,
+                requestState = null,
             ),
     ) {
     private val landingsCreatedCounter = atomic(0)
@@ -129,6 +136,56 @@ class AddLogbookComponent(
             AddLogbookEvent.BackClick -> onNavigateBack()
 
             AddLogbookEvent.SaveClick -> {
+                if (actualState.requestState is Resource.Loading) return
+                val logbook =
+                    kotlin
+                        .runCatching {
+                            with(actualState) {
+                                Logbook(
+                                    crossCountryTime = crossCountryTime,
+                                    dualGivenTime = dualGivenTime,
+                                    dualReceivedTime = dualReceivedTime,
+                                    ifrActualTime = ifrActualTime,
+                                    ifrSimulatedTime = ifrSimulatedTime,
+                                    ifrTime = ifrTime,
+                                    nightTime = nightTime,
+                                    pilotInCommandTime = pilotInCommandTime,
+                                    secondInCommandTime = secondInCommandTime,
+                                    simulatorTime = simulatorTime,
+                                    totalBlockTime = totalBlockTime,
+                                    landingAirportCode = landingAirportCode,
+                                    takeOffAirportCode = takeOffAirportCode,
+                                    landingDate = landingDate!!,
+                                    takeOffDate = takeOffDate!!,
+                                    landingTime = landingTime!!,
+                                    takeOffTime = takeOffTime!!,
+                                    personalRemarks = personalRemarks,
+                                    remarks = remarks,
+                                    landings = landings,
+                                    passengers = passengers,
+                                    style = style,
+                                    airplane = airplane!!,
+                                    myRole = myRole,
+                                )
+                            }
+                        }.onFailure {
+                            errorNotificationChannel.trySend(Unit)
+                        }.getOrNull()
+
+                logbook?.let {
+                    viewModelScope.launch {
+                        resourceFlow(
+                            logger = logger,
+                        ) {
+                            addLogbook(logbook = logbook)
+                        }.collect {
+                            updateState { copy(requestState = it) }
+                            if (it is Resource.Success) {
+                                onNavigateBack()
+                            }
+                        }
+                    }
+                }
             }
 
             is AddLogbookEvent.LandingDateChange -> {

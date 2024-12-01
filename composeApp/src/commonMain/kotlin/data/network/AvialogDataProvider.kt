@@ -2,18 +2,33 @@ package data.network
 
 import data.dto.request.AddAirplaneRequestDto
 import data.dto.request.AddContactRequestDto
+import data.dto.request.AddLogbookRequestDto
+import data.dto.request.ApproachTypeDto
 import data.dto.request.EditAirplaneRequestDto
 import data.dto.request.EditContactRequestDto
 import data.dto.request.EmptyRequestDto
+import data.dto.request.LandingEntryDto
+import data.dto.request.PassengerEntryDto
+import data.dto.request.RoleDto
+import data.dto.request.StyleDto
 import data.dto.response.AircraftResponseDto
 import data.dto.response.ContactResponseDto
 import data.dto.response.ProfileResponseDto
 import data.mapper.toDomain
 import data.repository.auth.IAuthRepository
 import domain.model.Airplane
+import domain.model.ApproachType
 import domain.model.Contact
+import domain.model.Landing
+import domain.model.Logbook
+import domain.model.Passenger
 import domain.model.Profile
+import domain.model.Role
+import domain.model.Style
 import io.ktor.http.HttpMethod
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
 
 class AvialogDataProvider(
     getHttpClient: GetHttpClient,
@@ -143,4 +158,92 @@ class AvialogDataProvider(
                 ),
         )
     }
+
+    suspend fun addLogbook(logbook: Logbook) {
+        authorizedRequest<AddLogbookRequestDto, EmptyRequestDto>(
+            url = "logbook",
+            httpMethod = HttpMethod.Post,
+            body =
+                with(logbook) {
+                    AddLogbookRequestDto(
+                        crossCountryTime = 0,
+                        dualGivenTime = 0,
+                        dualReceivedTime = 0,
+                        ifrActualTime = 0,
+                        ifrSimulatedTime = 0,
+                        ifrTime = 0,
+                        nightTime = 0,
+                        pilotInCommandTime = 0,
+                        secondInCommandTime = 0,
+                        simulatorTime = 0,
+                        totalBlockTime = 0,
+                        landingAirportCode = landingAirportCode,
+                        landingTime = landingDate.atTime(landingTime).toInstant(TimeZone.UTC).toString(),
+                        personalRemarks = personalRemarks,
+                        remarks = remarks,
+                        takeOffAirportCode = takeOffAirportCode,
+                        takeOffTime = takeOffDate.atTime(takeOffTime).toInstant(TimeZone.UTC).toString(),
+                        landings =
+                            landings.map {
+                                it.toDto()
+                            },
+                        passengers =
+                            passengers.map {
+                                it.toDto()
+                            },
+                        style = style.toDto(),
+                        myRole = myRole.toDto(),
+                        signatureUrl = null,
+                        airplaneId = logbook.airplane.id,
+                    )
+                },
+        )
+    }
+
+    private fun Landing.toDto() =
+        LandingEntryDto(
+            airportCode = airportCode,
+            approachType = approachType.toDto(),
+            count = count,
+            dayCount = dayCount,
+            nightCount = nightCount,
+        )
+
+    private fun ApproachType.toDto() =
+        when (this) {
+            ApproachType.VISUAL -> ApproachTypeDto.VISUAL
+        }
+
+    private fun Passenger.toDto() =
+        PassengerEntryDto(
+            company = company,
+            emailAddress = emailAddress,
+            firstName = firstName,
+            lastName = lastName,
+            note = note,
+            phone = phone,
+            role = role.toDto(),
+        )
+
+    private fun Role.toDto() =
+        when (this) {
+            Role.ATT -> RoleDto.ATT
+            Role.PIC -> RoleDto.PIC
+            Role.SIC -> RoleDto.SIC
+            Role.DUAL -> RoleDto.DUAL
+            Role.SPIC -> RoleDto.SPIC
+            Role.P1S -> RoleDto.P1S
+            Role.INS -> RoleDto.INS
+            Role.EXM -> RoleDto.EXM
+            Role.OTH -> RoleDto.OTH
+        }
+
+    private fun Style.toDto() =
+        when (this) {
+            Style.VFR -> StyleDto.VFR
+            Style.IFR -> StyleDto.IFR
+            Style.Y -> StyleDto.Y
+            Style.Z -> StyleDto.Z
+            Style.Z2 -> StyleDto.Z2
+        }
 }

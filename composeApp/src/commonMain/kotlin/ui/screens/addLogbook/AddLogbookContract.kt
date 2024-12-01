@@ -1,5 +1,6 @@
 package ui.screens.addLogbook
 
+import Resource
 import domain.model.Airplane
 import domain.model.Landing
 import domain.model.Passenger
@@ -34,6 +35,7 @@ data class AddLogbookState(
     val style: Style,
     val airplane: Airplane?,
     val myRole: Role,
+    val requestState: Resource<Unit>?,
 )
 
 sealed interface AddLogbookEvent {
