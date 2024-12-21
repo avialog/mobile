@@ -15,10 +15,13 @@ import domain.model.Role
 import domain.model.toBoxColor
 
 @Composable
-fun RoleBox(role: Role) {
+fun RoleBox(
+    role: Role,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier =
-            Modifier
+            modifier
                 .size(size = 36.dp)
                 .background(
                     color = role.toBoxColor(),

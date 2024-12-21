@@ -19,6 +19,7 @@ import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
 import domain.useCase.GetContacts
+import domain.useCase.GetFlights
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
 import domain.useCase.LogOut
@@ -85,11 +86,15 @@ class RootComponent(
 
             Configuration.Flights -> {
                 val authRepository by di.instance<IAuthRepository>()
+                val getFlights by di.instance<GetFlights>()
+                val logger by di.instance<ILogger>()
+
                 Child.Flights(
                     component =
                         FlightsComponent(
                             componentContext = context,
-                            authRepository = authRepository,
+                            getFlights = getFlights,
+                            logger = logger,
                             onNavigateToAddLogbook = {
                                 navigation.pushNew(Configuration.AddLogbook)
                             },

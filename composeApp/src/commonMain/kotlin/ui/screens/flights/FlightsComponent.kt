@@ -1,23 +1,38 @@
 package ui.screens.flights
 
 import BaseMviViewModel
+import ILogger
+import Resource
+import RetrySharedFlow
 import com.arkivanov.decompose.ComponentContext
-import data.repository.auth.IAuthRepository
+import domain.useCase.GetFlights
 import kotlinx.coroutines.launch
+import resourceFlowWithRetrying
 
 class FlightsComponent(
     componentContext: ComponentContext,
     private val onNavigateToAddLogbook: () -> Unit,
-    private val authRepository: IAuthRepository,
+    private val getFlights: GetFlights,
+    private val logger: ILogger,
 ) : BaseMviViewModel<FlightsState, FlightsEvent>(
         componentContext = componentContext,
-        initialState = FlightsState(token = null),
+        initialState =
+            FlightsState(
+                flightsResource = Resource.Loading,
+            ),
     ) {
+    private val retrySharedFlow = RetrySharedFlow()
+
     override fun initialised() {
         viewModelScope.launch {
-            authRepository.getAuthToken().also {
+            resourceFlowWithRetrying(
+                retrySharedFlow = retrySharedFlow,
+                logger = logger,
+            ) {
+                getFlights()
+            }.collect {
                 updateState {
-                    copy(token = it)
+                    copy(flightsResource = it)
                 }
             }
         }
@@ -26,6 +41,7 @@ class FlightsComponent(
     override fun onNewEvent(event: FlightsEvent) {
         when (event) {
             FlightsEvent.AddFlightClick -> onNavigateToAddLogbook()
+            FlightsEvent.RetryClick -> retrySharedFlow.sendRetryEvent()
         }
     }
 }

@@ -29,6 +29,7 @@ class AddAirplaneComponent(
                 remarks = airplaneToUpdateOrNull?.remarks ?: "",
                 isRequestInProgress = false,
                 showErrorIfAny = false,
+                isSingleEngine = airplaneToUpdateOrNull?.isSingleEngine ?: true,
             ),
     ) {
     private val errorNotificationChannel = Channel<Unit>(Channel.UNLIMITED)
@@ -77,6 +78,11 @@ class AddAirplaneComponent(
                     }
                 }
             }
+
+            is AddAirplaneEvent.ChangeSingleEngine ->
+                updateState {
+                    copy(isSingleEngine = event.newValue)
+                }
         }
     }
 
@@ -94,6 +100,7 @@ class AddAirplaneComponent(
                     remarks = remarks,
                     imageUrl = imageUrl,
                     airplaneId = state.idToUpdateOrNull,
+                    isSingleEngine = state.isSingleEngine,
                 )
             } else {
                 addAirplane(
@@ -101,6 +108,7 @@ class AddAirplaneComponent(
                     registrationNumber = registrationNumber,
                     remarks = remarks,
                     imageUrl = imageUrl,
+                    isSingleEngine = state.isSingleEngine,
                 )
             }
         }
