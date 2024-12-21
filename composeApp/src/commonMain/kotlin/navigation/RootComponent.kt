@@ -15,6 +15,7 @@ import di.di
 import domain.model.Airplane
 import domain.model.Contact
 import domain.useCase.AddContact
+import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
 import domain.useCase.GetContacts
@@ -31,6 +32,7 @@ import kotlinx.serialization.Serializable
 import org.kodein.di.instance
 import ui.screens.addAirplane.AddAirplaneComponent
 import ui.screens.addContact.AddContactComponent
+import ui.screens.addLogbook.AddLogbookComponent
 import ui.screens.airplanes.AirplanesComponent
 import ui.screens.carrier.CarrierComponent
 import ui.screens.contacts.ContactsComponent
@@ -57,8 +59,8 @@ class RootComponent(
     private fun createChild(
         config: Configuration,
         context: ComponentContext,
-    ): Child {
-        return when (config) {
+    ): Child =
+        when (config) {
             Configuration.Login -> {
                 val loginWithEmailAndPassword: LoginWithEmailAndPassword by di.instance()
                 val registerWithEmailAndPassword: RegisterWithEmailAndPassword by di.instance()
@@ -88,6 +90,9 @@ class RootComponent(
                         FlightsComponent(
                             componentContext = context,
                             authRepository = authRepository,
+                            onNavigateToAddLogbook = {
+                                navigation.pushNew(Configuration.AddLogbook)
+                            },
                         ),
                 )
             }
@@ -245,27 +250,65 @@ class RootComponent(
                         ),
                 )
             }
+
+            Configuration.AddLogbook -> {
+                val logger: ILogger by di.instance()
+                val addLogbook: AddLogbook by di.instance()
+
+                Child.AddLogbook(
+                    component =
+                        AddLogbookComponent(
+                            componentContext = context,
+                            logger = logger,
+                            addLogbook = addLogbook,
+                            onNavigateBack = {
+                                navigation.pop()
+                            },
+                        ),
+                )
+            }
         }
-    }
 
     sealed class Child {
-        data class Login(val component: LoginComponent) : Child()
+        data class Login(
+            val component: LoginComponent,
+        ) : Child()
 
-        data class Flights(val component: FlightsComponent) : Child()
+        data class Flights(
+            val component: FlightsComponent,
+        ) : Child()
 
-        data class Profile(val component: ProfileComponent) : Child()
+        data class Profile(
+            val component: ProfileComponent,
+        ) : Child()
 
-        data class Carrier(val component: CarrierComponent) : Child()
+        data class Carrier(
+            val component: CarrierComponent,
+        ) : Child()
 
-        data class Onboarding(val component: OnboardingComponent) : Child()
+        data class Onboarding(
+            val component: OnboardingComponent,
+        ) : Child()
 
-        data class Contacts(val component: ContactsComponent) : Child()
+        data class Contacts(
+            val component: ContactsComponent,
+        ) : Child()
 
-        data class AddContact(val component: AddContactComponent) : Child()
+        data class AddContact(
+            val component: AddContactComponent,
+        ) : Child()
 
-        data class Airplanes(val component: AirplanesComponent) : Child()
+        data class Airplanes(
+            val component: AirplanesComponent,
+        ) : Child()
 
-        data class AddAirplane(val component: AddAirplaneComponent) : Child()
+        data class AddAirplane(
+            val component: AddAirplaneComponent,
+        ) : Child()
+
+        data class AddLogbook(
+            val component: AddLogbookComponent,
+        ) : Child()
     }
 
     @Serializable
@@ -289,12 +332,19 @@ class RootComponent(
         data object Contacts : Configuration()
 
         @Serializable
-        data class AddContact(val contactToUpdateOrNull: Contact? = null) : Configuration()
+        data class AddContact(
+            val contactToUpdateOrNull: Contact? = null,
+        ) : Configuration()
 
         @Serializable
         data object Airplanes : Configuration()
 
         @Serializable
-        data class AddAirplane(val airplaneToUpdateOrNull: Airplane? = null) : Configuration()
+        data class AddAirplane(
+            val airplaneToUpdateOrNull: Airplane? = null,
+        ) : Configuration()
+
+        @Serializable
+        data object AddLogbook : Configuration()
     }
 }

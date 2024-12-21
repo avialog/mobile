@@ -27,6 +27,7 @@ import navigation.RootComponent.Configuration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import ui.screens.addAirplane.AddAirplaneDestination
 import ui.screens.addContact.AddContactDestination
+import ui.screens.addLogbook.AddLogbookDestination
 import ui.screens.airplanes.AirplanesDestination
 import ui.screens.carrier.CarrierDestination
 import ui.screens.contacts.ContactsDestination
@@ -57,6 +58,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.AddContact -> AddContactDestination(addContactComponent = instance.component)
                     is RootComponent.Child.Airplanes -> AirplanesDestination(airplanesComponent = instance.component)
                     is RootComponent.Child.AddAirplane -> AddAirplaneDestination(addAirplaneComponent = instance.component)
+                    is RootComponent.Child.AddLogbook -> AddLogbookDestination(addLogbookComponent = instance.component)
                 }
             }
             AvialogBottomNavigation(

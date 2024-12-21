@@ -1,0 +1,108 @@
+package ui.screens.addLogbook
+
+import Resource
+import domain.model.Airplane
+import domain.model.Landing
+import domain.model.Passenger
+import domain.model.Role
+import domain.model.Style
+import kotlinx.datetime.DateTimePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+
+data class AddLogbookState(
+    val crossCountryTime: DateTimePeriod?,
+    val dualGivenTime: DateTimePeriod?,
+    val dualReceivedTime: DateTimePeriod?,
+    val ifrActualTime: DateTimePeriod?,
+    val ifrSimulatedTime: DateTimePeriod?,
+    val ifrTime: DateTimePeriod?,
+    val nightTime: DateTimePeriod?,
+    val pilotInCommandTime: DateTimePeriod?,
+    val secondInCommandTime: DateTimePeriod?,
+    val simulatorTime: DateTimePeriod?,
+    val totalBlockTime: DateTimePeriod,
+    val landingAirportCode: String,
+    val takeOffAirportCode: String,
+    val landingDate: LocalDate?,
+    val takeOffDate: LocalDate?,
+    val landingTime: LocalTime?,
+    val takeOffTime: LocalTime?,
+    val personalRemarks: String,
+    val remarks: String,
+    val landings: List<Landing>,
+    val passengers: List<Passenger>,
+    val style: Style,
+    val airplane: Airplane?,
+    val myRole: Role,
+    val requestState: Resource<Unit>?,
+)
+
+sealed interface AddLogbookEvent {
+    data object BackClick : AddLogbookEvent
+
+    data object SaveClick : AddLogbookEvent
+
+    data class TakeOffDateChange(
+        val newDate: LocalDate?,
+    ) : AddLogbookEvent
+
+    data class LandingDateChange(
+        val newDate: LocalDate?,
+    ) : AddLogbookEvent
+
+    data class TakeOffTimeChange(
+        val newTime: LocalTime?,
+    ) : AddLogbookEvent
+
+    data class LandingTimeChange(
+        val newTime: LocalTime?,
+    ) : AddLogbookEvent
+
+    data class TakeOffAirportChange(
+        val newAirport: String,
+    ) : AddLogbookEvent
+
+    data class LandingAirportChange(
+        val newAirport: String,
+    ) : AddLogbookEvent
+
+    data object ChooseAirplaneClick : AddLogbookEvent
+
+    data class LandingChange(
+        val index: Int,
+        val newLanding: Landing,
+    ) : AddLogbookEvent
+
+    data object AddLandingClick : AddLogbookEvent
+
+    data class RemoveLandingClick(
+        val index: Int,
+    ) : AddLogbookEvent
+
+    data class AddPassengerClick(
+        val role: Role,
+    ) : AddLogbookEvent
+
+    data class ChangeMyRoleClick(
+        val role: Role,
+    ) : AddLogbookEvent
+
+    data class RemovePassengerClick(
+        val index: Int,
+    ) : AddLogbookEvent
+
+    data class RemarksChange(
+        val newRemarks: String,
+    ) : AddLogbookEvent
+
+    data class PersonalRemarksChange(
+        val newRemarks: String,
+    ) : AddLogbookEvent
+
+    data class StyleChange(
+        val style: Style,
+    ) : AddLogbookEvent
+
+    data object TimesChangeClick : AddLogbookEvent
+}

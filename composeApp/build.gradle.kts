@@ -64,6 +64,7 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+            implementation(libs.kotlinx.datetime)
         }
 
         iosMain.dependencies {
@@ -82,7 +83,10 @@ val appVersionCode = (((Date().time / 1000) - 1451606400) / 10)
 
 android {
     namespace = "com.pawlowski.avialog"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -90,8 +94,14 @@ android {
 
     defaultConfig {
         applicationId = "com.pawlowski.avialog"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = appVersionCode.toInt()
         versionName = "1.0"
     }

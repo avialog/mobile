@@ -1,4 +1,4 @@
-package ui.screens.contacts
+package ui.screens.chooseContact
 
 import Resource
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,13 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,14 +41,13 @@ import androidx.compose.ui.unit.dp
 import domain.model.Contact
 import ui.components.ErrorItem
 import ui.components.LoaderFullScreen
-import ui.components.MoreIconWithDropdown
 import ui.components.Photo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactsScreen(
-    state: ContactsState,
-    onNewEvent: (ContactsEvent) -> Unit,
+fun ChooseContactScreen(
+    state: ChooseContactState,
+    onNewEvent: (ChooseContactEvent) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -71,7 +65,7 @@ fun ContactsScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            onNewEvent(ContactsEvent.BackClick)
+                            onNewEvent(ChooseContactEvent.BackClick)
                         },
                     ) {
                         Icon(
@@ -82,18 +76,6 @@ fun ContactsScreen(
                 },
                 scrollBehavior = scrollBehavior,
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onNewEvent(ContactsEvent.AddContactClick)
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = null,
-                )
-            }
         },
     ) { innerPadding ->
         Column(
@@ -106,7 +88,7 @@ fun ContactsScreen(
                 is Resource.Error -> {
                     ErrorItem(
                         onRetryClick = {
-                            onNewEvent(ContactsEvent.RetryClick)
+                            onNewEvent(ChooseContactEvent.RetryClick)
                         },
                     )
                 }
@@ -114,15 +96,10 @@ fun ContactsScreen(
                     LoaderFullScreen()
                 }
                 is Resource.Success ->
-                    Box {
-                        Content(
-                            contacts = state.contactsResource.data,
-                            onNewEvent = onNewEvent,
-                        )
-                        if (state.isRequestInProgress) {
-                            LoaderFullScreen(isOverlay = true)
-                        }
-                    }
+                    Content(
+                        contacts = state.contactsResource.data,
+                        onNewEvent = onNewEvent,
+                    )
             }
         }
     }
@@ -132,7 +109,7 @@ fun ContactsScreen(
 @Composable
 private fun Content(
     contacts: List<Contact>,
-    onNewEvent: (ContactsEvent) -> Unit,
+    onNewEvent: (ChooseContactEvent) -> Unit,
 ) {
     Column {
         val groupedContacts =
@@ -183,7 +160,7 @@ private fun CharacterSectionHeader(character: String) {
 @Composable
 private fun ContactItem(
     contact: Contact,
-    onNewEvent: (ContactsEvent) -> Unit,
+    onNewEvent: (ChooseContactEvent) -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
@@ -192,7 +169,7 @@ private fun ContactItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-                    onNewEvent(ContactsEvent.ContactClick(contact = contact))
+                    onNewEvent(ChooseContactEvent.ContactClick(contact = contact))
                 }.padding(all = 16.dp),
     ) {
         Avatar(photoUrl = contact.avatarUrl)
@@ -200,17 +177,13 @@ private fun ContactItem(
             contact = contact,
             modifier = Modifier.weight(weight = 1f),
         )
-        MoreIconWithDropdown(
-            contact = contact,
-            onNewEvent = onNewEvent,
-        )
     }
 }
 
 @Composable
 private fun NameAndSurnameColumn(
     contact: Contact,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 4.dp),
@@ -235,39 +208,4 @@ private fun Avatar(photoUrl: String?) {
         photoUrl = photoUrl,
         modifier = Modifier.size(size = 40.dp).clip(shape = CircleShape),
     )
-}
-
-@Composable
-private fun MoreIconWithDropdown(
-    contact: Contact,
-    onNewEvent: (ContactsEvent) -> Unit,
-) {
-    MoreIconWithDropdown { onDismiss ->
-        DropdownMenuItem(
-            text = { Text("Edytuj kontakt") },
-            onClick = {
-                onNewEvent(ContactsEvent.EditContactClick(contact = contact))
-                onDismiss()
-            },
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.Edit,
-                    contentDescription = null,
-                )
-            },
-        )
-        DropdownMenuItem(
-            text = { Text("Usuń kontakt") },
-            onClick = {
-                onNewEvent(ContactsEvent.DeleteContactClick(contact = contact))
-                onDismiss()
-            },
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.Delete,
-                    contentDescription = null,
-                )
-            },
-        )
-    }
 }

@@ -21,6 +21,7 @@ kodeinDiFrameworkCompose = "7.21.1"
 kotlin = "1.9.22"
 kotlinCompilerExtensionVersion = "1.5.9"
 decompose = "2.2.0-alpha03"
+kotlinxDatetime = "0.6.0-RC.2"
 kotlinxSerializationJson = "1.6.1"
 extensionsComposeJetbrains = "2.1.4-compose-experimental"
 kotlinx-atomicfu = "0.23.2"
@@ -47,6 +48,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomicfu" }
 build-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "kotlinx-atomicfu" }

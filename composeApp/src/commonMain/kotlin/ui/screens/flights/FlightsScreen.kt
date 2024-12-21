@@ -4,7 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,24 +23,39 @@ fun FlightsScreen(
     state: FlightsState,
     onNewEvent: (FlightsEvent) -> Unit,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
-        modifier = Modifier.verticalScroll(state = rememberScrollState()),
-    ) {
-        Text(text = "Home")
-        Text(text = state.token ?: "Loading token...")
-        val clipboardManager = LocalClipboardManager.current
-        Button(onClick = {
-            state.token?.let {
-                clipboardManager.setText(
-                    buildAnnotatedString {
-                        append(it)
-                    },
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onNewEvent(FlightsEvent.AddFlightClick)
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
                 )
             }
-        }) {
-            Text(text = "Copy token")
+        },
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+            modifier = Modifier.verticalScroll(state = rememberScrollState()),
+        ) {
+            Text(text = "Home")
+            Text(text = state.token ?: "Loading token...")
+            val clipboardManager = LocalClipboardManager.current
+            Button(onClick = {
+                state.token?.let {
+                    clipboardManager.setText(
+                        buildAnnotatedString {
+                            append(it)
+                        },
+                    )
+                }
+            }) {
+                Text(text = "Copy token")
+            }
         }
     }
 }

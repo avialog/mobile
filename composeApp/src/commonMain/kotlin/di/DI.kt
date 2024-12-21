@@ -10,6 +10,7 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import domain.useCase.AddContact
+import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
 import domain.useCase.EditContact
 import domain.useCase.GetContacts
@@ -128,6 +129,11 @@ val di =
         }
         bindProvider<EditAirplane> {
             EditAirplane(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<AddLogbook> {
+            AddLogbook(
                 avialogDataProvider = instance(),
             )
         }

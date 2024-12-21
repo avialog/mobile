@@ -1,0 +1,1002 @@
+package ui.screens.addLogbook
+
+import Resource
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.ArrowDown
+import compose.icons.fontawesomeicons.solid.Clock
+import compose.icons.fontawesomeicons.solid.MapMarker
+import compose.icons.fontawesomeicons.solid.Minus
+import compose.icons.fontawesomeicons.solid.MinusCircle
+import compose.icons.fontawesomeicons.solid.PlaneArrival
+import compose.icons.fontawesomeicons.solid.PlaneDeparture
+import compose.icons.fontawesomeicons.solid.Plus
+import domain.model.Landing
+import domain.model.Passenger
+import domain.model.Role
+import domain.model.Style
+import domain.model.fullName
+import kotlinx.datetime.DateTimePeriod
+import ui.components.ActionListItem
+import ui.components.AirplaneCard
+import ui.components.AvialogDatePicker
+import ui.components.RoleBox
+import ui.components.TimePickerDialog
+import ui.screens.chooseAirportCodeDialog.ChooseAirportCodeDialog
+import ui.utils.formatDayMonthYear
+import ui.utils.formatHourMinute
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddLogbookScreen(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Dodaj lot",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            onNewEvent(AddLogbookEvent.BackClick)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier =
+                Modifier
+                    .padding(paddingValues = innerPadding)
+                    .consumeWindowInsets(innerPadding),
+        ) {
+            Content(
+                state = state,
+                onNewEvent = onNewEvent,
+                modifier = Modifier.weight(weight = 1f),
+            )
+            Button(
+                onClick = {
+                    onNewEvent(AddLogbookEvent.SaveClick)
+                },
+                shape = RoundedCornerShape(size = 4.dp),
+                modifier =
+                    Modifier
+                        .padding(all = 16.dp)
+                        .heightIn(min = 54.dp)
+                        .fillMaxWidth(),
+            ) {
+                if (state.requestState !is Resource.Loading) {
+                    Text(text = "Dodaj lot")
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Content(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        modifier = modifier,
+    ) {
+        item {
+            DatesRow(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            TimesRow(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            AirportInputsRow(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            AirplaneCard(
+                airplane = state.airplane,
+                onAirplaneClick = {
+                    onNewEvent(AddLogbookEvent.ChooseAirplaneClick)
+                },
+                moreActions = null,
+                textIfAirplaneNull = "Wybierz samolot",
+            )
+        }
+
+        Landings(
+            state = state,
+            onNewEvent = onNewEvent,
+        )
+
+        item {
+            Passengers(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+
+        item {
+            Remarks(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+
+        item {
+            PersonalRemarks(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            ChooseStyleCard(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+        item {
+            TimesSection(
+                state = state,
+                onNewEvent = onNewEvent,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TimesSection(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = "Czasy",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(space = 8.dp),
+        ) {
+            TimeDisplay(time = state.totalBlockTime, title = "TOTAL")
+            state.pilotInCommandTime?.let { TimeDisplay(time = it, title = "PIC") }
+            state.secondInCommandTime?.let { TimeDisplay(time = it, title = "SIC") }
+            state.nightTime?.let { TimeDisplay(time = it, title = "NIGHT") }
+            state.crossCountryTime?.let { TimeDisplay(time = it, title = "XC") }
+            state.ifrTime?.let { TimeDisplay(time = it, title = "IFR") }
+            state.dualGivenTime?.let { TimeDisplay(time = it, title = "DUAL") }
+            state.dualReceivedTime?.let { TimeDisplay(time = it, title = "DUAL RECEIVED") }
+            state.ifrActualTime?.let { TimeDisplay(time = it, title = "IFR ACTUAL") }
+            state.ifrSimulatedTime?.let { TimeDisplay(time = it, title = "IFR SIMULATED") }
+            state.simulatorTime?.let { TimeDisplay(time = it, title = "SIMULATOR") }
+        }
+
+        TextButton(
+            onClick = {
+                onNewEvent(AddLogbookEvent.TimesChangeClick)
+            },
+            modifier =
+                Modifier.align(
+                    alignment = Alignment.CenterHorizontally,
+                ),
+        ) {
+            Text(text = "Modyfikuj czasy")
+        }
+    }
+}
+
+@Composable
+private fun TimeDisplay(
+    time: DateTimePeriod,
+    title: String,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier =
+            Modifier
+                .border(
+                    width = 6.dp,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape,
+                ).clip(CircleShape)
+                .padding(all = 24.dp),
+    ) {
+        Text(
+            text = "${time.hours.toTwoDigitString()}:${time.minutes.toTwoDigitString()}",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.secondary,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+private fun Int.toTwoDigitString() = if (this < 10) "0$this" else "$this"
+
+@Composable
+fun ChooseStyleCard(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    val chooseStyleBottomSheetVisible =
+        remember {
+            mutableStateOf(false)
+        }
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+    ) {
+        Text(
+            text = "Styl",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+
+        OutlinedCard(
+            onClick = {
+                chooseStyleBottomSheetVisible.value = true
+            },
+        ) {
+            Row(
+                modifier =
+                    Modifier.padding(
+                        vertical = 16.dp,
+                        horizontal = 12.dp,
+                    ),
+            ) {
+                Text(
+                    text = state.style.name,
+                    modifier = Modifier.weight(weight = 1f),
+                )
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+
+    ChooseStyleBottomSheet(
+        show = chooseStyleBottomSheetVisible.value,
+        selectedStyle = state.style,
+        styles = Style.entries,
+        onChooseStyle = {
+            chooseStyleBottomSheetVisible.value = false
+            onNewEvent(AddLogbookEvent.StyleChange(style = it))
+        },
+        onDismiss = {
+            chooseStyleBottomSheetVisible.value = false
+        },
+    )
+}
+
+@Composable
+fun Remarks(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    OutlinedTextField(
+        value = state.remarks,
+        label = {
+            Text(text = "Uwagi")
+        },
+        onValueChange = {
+            onNewEvent(AddLogbookEvent.RemarksChange(it))
+        },
+        singleLine = false,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+fun PersonalRemarks(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    OutlinedTextField(
+        value = state.personalRemarks,
+        label = {
+            Text(text = "Notatki personalne (nie znajdą się w raporcie)")
+        },
+        onValueChange = {
+            onNewEvent(AddLogbookEvent.PersonalRemarksChange(it))
+        },
+        singleLine = false,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+private fun Passengers(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+    ) {
+        Text(
+            text = "Załoga",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(space = 10.dp),
+            modifier =
+                Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        spotColor = Color(0x40000000),
+                        ambientColor = Color(0x40000000),
+                    ).background(
+                        color = Color(0xFFFFFFFF),
+                        shape = RoundedCornerShape(size = 8.dp),
+                    ).padding(horizontal = 16.dp),
+        ) {
+            val showMyRoleBottomSheet =
+                remember {
+                    mutableStateOf(false)
+                }
+            PassengerRow(
+                passenger =
+                    Passenger(
+                        company = null,
+                        emailAddress = "",
+                        firstName = "Ty",
+                        lastName = null,
+                        note = null,
+                        phone = null,
+                        role = state.myRole,
+                    ),
+                onClick = {
+                    showMyRoleBottomSheet.value = true
+                },
+            )
+
+            ChooseRoleBottomSheet(
+                show = showMyRoleBottomSheet.value,
+                roles = Role.entries,
+                selectedRole = state.myRole,
+                onChooseRole = {
+                    showMyRoleBottomSheet.value = false
+                    onNewEvent(AddLogbookEvent.ChangeMyRoleClick(role = it))
+                },
+                onDismiss = {
+                    showMyRoleBottomSheet.value = false
+                },
+            )
+
+            HorizontalDivider()
+            state.passengers.forEachIndexed { index, passenger ->
+                PassengerRow(
+                    passenger = passenger,
+                    onDeleteClick = {
+                        onNewEvent(AddLogbookEvent.RemovePassengerClick(index = index))
+                    },
+                )
+                HorizontalDivider()
+            }
+
+            val showRolesBottomSheet =
+                remember {
+                    mutableStateOf(false)
+                }
+
+            TextButton(
+                onClick = {
+                    showRolesBottomSheet.value = true
+                },
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            ) {
+                Text(text = "+ Dodaj załogę")
+            }
+
+            ChooseRoleBottomSheet(
+                show = showRolesBottomSheet.value,
+                roles = Role.entries,
+                selectedRole = null,
+                onChooseRole = {
+                    onNewEvent(AddLogbookEvent.AddPassengerClick(role = it))
+                },
+                onDismiss = {
+                    showRolesBottomSheet.value = false
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun PassengerRow(
+    passenger: Passenger,
+    onClick: (() -> Unit)? = null,
+    onDeleteClick: (() -> Unit)? = null,
+) {
+    ActionListItem(
+        title = passenger.fullName,
+        subtitle = passenger.role.friendlyName,
+        leading = {
+            RoleBox(role = passenger.role)
+        },
+        trailing = {
+            if (onDeleteClick != null) {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
+        onClick = onClick,
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.Landings(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    item {
+        Text(
+            text = "Lądowania",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+    }
+    itemsIndexed(
+        state.landings,
+        key = { index, landing ->
+            landing.id
+        },
+    ) { index, landing ->
+        Column(modifier = Modifier.animateItemPlacement()) {
+            LandingCard(
+                landing = landing,
+                onLandingChange = {
+                    onNewEvent(AddLogbookEvent.LandingChange(index, it))
+                },
+                showRemoveLandingButton = index != state.landings.lastIndex,
+                onRemoveLanding = {
+                    onNewEvent(AddLogbookEvent.RemoveLandingClick(index))
+                },
+            )
+            if (index != state.landings.lastIndex) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.ArrowDown,
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .fillParentMaxWidth()
+                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                            .padding(vertical = 4.dp)
+                            .size(size = 16.dp),
+                )
+            }
+        }
+    }
+    item {
+        TextButton(
+            onClick = {
+                onNewEvent(AddLogbookEvent.AddLandingClick)
+            },
+            modifier =
+                Modifier
+                    .fillParentMaxWidth()
+                    .wrapContentWidth(align = Alignment.CenterHorizontally),
+        ) {
+            Text(text = "+ Dodaj lądowanie")
+        }
+    }
+}
+
+@Composable
+private fun LandingCard(
+    landing: Landing,
+    onLandingChange: (Landing) -> Unit,
+    showRemoveLandingButton: Boolean,
+    onRemoveLanding: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        modifier =
+            Modifier
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x40000000),
+                    ambientColor = Color(0x40000000),
+                ).background(
+                    color = Color(0xFFFFFFFF),
+                    shape = RoundedCornerShape(size = 8.dp),
+                ),
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            val showDialog =
+                remember {
+                    mutableStateOf(false)
+                }
+            ChooseAirportCodeDialog(
+                show = showDialog.value,
+                onDismiss = {
+                    showDialog.value = false
+                },
+                onAirportCodeSelected = {
+                    onLandingChange(landing.copy(airportCode = it))
+                    showDialog.value = false
+                },
+                initialAirportCode = landing.airportCode,
+            )
+            Row(
+                modifier =
+                    Modifier
+                        .align(alignment = Alignment.TopCenter)
+                        .padding(top = 8.dp)
+                        .clip(shape = RoundedCornerShape(size = 16.dp))
+                        .widthIn(min = 150.dp)
+                        .clickable {
+                            showDialog.value = true
+                        }.padding(
+                            vertical = 4.dp,
+                            horizontal = 24.dp,
+                        ),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.MapMarker,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 4.dp).size(size = 16.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = landing.airportCode.ifEmpty { "Kliknij aby wpisać..." },
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            if (showRemoveLandingButton) {
+                IconButton(
+                    onClick = onRemoveLanding,
+                    modifier =
+                        Modifier
+                            .align(alignment = Alignment.TopEnd),
+                ) {
+                    Icon(
+                        imageVector = FontAwesomeIcons.Solid.MinusCircle,
+                        contentDescription = null,
+                        modifier =
+                            Modifier
+                                .size(size = 16.dp),
+                        tint = Color.Red,
+                    )
+                }
+            }
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.PlaneDeparture,
+                contentDescription = null,
+                modifier = Modifier.size(size = 16.dp),
+            )
+            Text(
+                text = "Visual",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(weight = 1f),
+            )
+            NumberOfLandingsPicker(
+                label = "Noc",
+                number = landing.nightCount,
+                onNumberChange = {
+                    onLandingChange(landing.copy(nightCount = it))
+                },
+            )
+            NumberOfLandingsPicker(
+                label = "Dzień",
+                number = landing.dayCount,
+                onNumberChange = {
+                    onLandingChange(landing.copy(dayCount = it))
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun NumberOfLandingsPicker(
+    label: String,
+    number: Long,
+    onNumberChange: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        IconButton(
+            onClick = {
+                onNumberChange((number - 1L).coerceAtLeast(minimumValue = 0L))
+            },
+            modifier =
+                Modifier.size(size = 24.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Minus,
+                contentDescription = null,
+                modifier = Modifier.size(size = 12.dp),
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(space = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            Text(
+                text = number.toString(),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        IconButton(
+            onClick = {
+                onNumberChange(number + 1L)
+            },
+            modifier =
+                Modifier.size(size = 24.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Plus,
+                contentDescription = null,
+                modifier = Modifier.size(size = 12.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DatesRow(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+        val showStartDateDialog = remember { mutableStateOf(false) }
+        ChooseTimeCard(
+            text = state.takeOffDate?.formatDayMonthYear() ?: "Wybierz datę",
+            label = "Data startu (UTC)*",
+            onClick = {
+                showStartDateDialog.value = true
+            },
+            modifier = Modifier.weight(weight = 1f),
+        )
+
+        if (showStartDateDialog.value) {
+            AvialogDatePicker(
+                onDismiss = {
+                    showStartDateDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.TakeOffDateChange(newDate = it))
+                    showStartDateDialog.value = false
+                },
+                initial = state.takeOffDate,
+            )
+        }
+
+        val showEndDateDialog = remember { mutableStateOf(false) }
+        ChooseTimeCard(
+            text = state.landingDate?.formatDayMonthYear() ?: "Wybierz datę",
+            label = "Data lądowania (UTC)*",
+            onClick = {
+                showEndDateDialog.value = true
+            },
+            modifier = Modifier.weight(weight = 1f),
+        )
+
+        if (showEndDateDialog.value) {
+            AvialogDatePicker(
+                onDismiss = {
+                    showEndDateDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.LandingDateChange(newDate = it))
+                    showEndDateDialog.value = false
+                },
+                initial = state.landingDate,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimesRow(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+        val showStartTimeDialog = remember { mutableStateOf(false) }
+        ChooseTimeCard(
+            text = state.takeOffTime?.formatHourMinute() ?: "Wybierz godzinę",
+            label = "Czas startu (UTC)*",
+            onClick = {
+                showStartTimeDialog.value = true
+            },
+            icon = FontAwesomeIcons.Solid.Clock,
+            modifier = Modifier.weight(weight = 1f),
+        )
+
+        if (showStartTimeDialog.value) {
+            TimePickerDialog(
+                onDismiss = {
+                    showStartTimeDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.TakeOffTimeChange(newTime = it))
+                    showStartTimeDialog.value = false
+                },
+                initial = state.takeOffTime,
+            )
+        }
+
+        val showEndTimeDialog = remember { mutableStateOf(false) }
+        ChooseTimeCard(
+            text = state.landingTime?.formatHourMinute() ?: "Wybierz godzinę",
+            label = "Czas lądowania (UTC)*",
+            onClick = {
+                showEndTimeDialog.value = true
+            },
+            icon = FontAwesomeIcons.Solid.Clock,
+            modifier = Modifier.weight(weight = 1f),
+        )
+
+        if (showEndTimeDialog.value) {
+            TimePickerDialog(
+                onDismiss = {
+                    showEndTimeDialog.value = false
+                },
+                onConfirm = {
+                    onNewEvent(AddLogbookEvent.LandingTimeChange(newTime = it))
+                    showEndTimeDialog.value = false
+                },
+                initial = state.landingTime,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AirportInputsRow(
+    state: AddLogbookState,
+    onNewEvent: (AddLogbookEvent) -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+        OutlinedTextField(
+            value = state.takeOffAirportCode,
+            onValueChange = {
+                onNewEvent(AddLogbookEvent.TakeOffAirportChange(it))
+            },
+            singleLine = true,
+            label = {
+                Text(
+                    text = "Lotnisko startu*",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            },
+            keyboardOptions =
+                KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Characters,
+                ),
+            leadingIcon = {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.PlaneDeparture,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 16.dp),
+                )
+            },
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Right)
+                    },
+                ),
+            modifier = Modifier.weight(weight = 1f),
+        )
+        OutlinedTextField(
+            value = state.landingAirportCode,
+            onValueChange = {
+                onNewEvent(AddLogbookEvent.LandingAirportChange(it))
+            },
+            singleLine = true,
+            label = {
+                Text(
+                    text = "Lotnisko lądowania*",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.PlaneArrival,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 16.dp),
+                )
+            },
+            keyboardOptions =
+                KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Characters,
+                ),
+            modifier = Modifier.weight(weight = 1f),
+        )
+    }
+}
+
+@Composable
+private fun ChooseTimeCard(
+    text: String,
+    label: String,
+    icon: ImageVector = Icons.Filled.DateRange,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(space = 2.dp),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        OutlinedCard(
+            shape = RoundedCornerShape(size = 4.dp),
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier.padding(
+                        horizontal = 6.dp,
+                        vertical = 12.dp,
+                    ),
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 24.dp),
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+}

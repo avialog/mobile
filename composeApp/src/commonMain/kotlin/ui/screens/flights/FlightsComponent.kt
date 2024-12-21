@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 
 class FlightsComponent(
     componentContext: ComponentContext,
+    private val onNavigateToAddLogbook: () -> Unit,
     private val authRepository: IAuthRepository,
 ) : BaseMviViewModel<FlightsState, FlightsEvent>(
         componentContext = componentContext,
@@ -23,5 +24,8 @@ class FlightsComponent(
     }
 
     override fun onNewEvent(event: FlightsEvent) {
+        when (event) {
+            FlightsEvent.AddFlightClick -> onNavigateToAddLogbook()
+        }
     }
 }

@@ -4,4 +4,6 @@ data class FlightsState(
     val token: String?,
 )
 
-sealed interface FlightsEvent
+sealed interface FlightsEvent {
+    data object AddFlightClick : FlightsEvent
+}
