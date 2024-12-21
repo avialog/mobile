@@ -1,5 +1,8 @@
 package domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Passenger(
     val company: String?,
     val emailAddress: String?,

@@ -14,10 +14,13 @@ import data.repository.auth.IAuthRepository
 import di.di
 import domain.model.Airplane
 import domain.model.Contact
+import domain.model.Logbook
 import domain.useCase.AddContact
 import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
+import domain.useCase.DeleteLogbook
 import domain.useCase.EditContact
+import domain.useCase.EditLogbook
 import domain.useCase.GetContacts
 import domain.useCase.GetFlights
 import domain.useCase.GetProfile
@@ -87,6 +90,8 @@ class RootComponent(
             Configuration.Flights -> {
                 val authRepository by di.instance<IAuthRepository>()
                 val getFlights by di.instance<GetFlights>()
+                val deleteLogbook by di.instance<DeleteLogbook>()
+
                 val logger by di.instance<ILogger>()
 
                 Child.Flights(
@@ -96,8 +101,14 @@ class RootComponent(
                             getFlights = getFlights,
                             logger = logger,
                             onNavigateToAddLogbook = {
-                                navigation.pushNew(Configuration.AddLogbook)
+                                navigation.pushNew(Configuration.AddLogbook())
                             },
+                            onNavigateToEditLogbook = {
+                                navigation.pushNew(
+                                    Configuration.AddLogbook(logbookToUpdateOrNull = it),
+                                )
+                            },
+                            deleteLogbook = deleteLogbook,
                         ),
                 )
             }
@@ -256,9 +267,10 @@ class RootComponent(
                 )
             }
 
-            Configuration.AddLogbook -> {
+            is Configuration.AddLogbook -> {
                 val logger: ILogger by di.instance()
                 val addLogbook: AddLogbook by di.instance()
+                val editLogbook: EditLogbook by di.instance()
 
                 Child.AddLogbook(
                     component =
@@ -269,6 +281,8 @@ class RootComponent(
                             onNavigateBack = {
                                 navigation.pop()
                             },
+                            logbookToUpdateOrNull = config.logbookToUpdateOrNull,
+                            editLogbook = editLogbook,
                         ),
                 )
             }
@@ -350,6 +364,8 @@ class RootComponent(
         ) : Configuration()
 
         @Serializable
-        data object AddLogbook : Configuration()
+        data class AddLogbook(
+            val logbookToUpdateOrNull: Logbook? = null,
+        ) : Configuration()
     }
 }

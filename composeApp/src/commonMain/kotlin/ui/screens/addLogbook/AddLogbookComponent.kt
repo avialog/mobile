@@ -17,6 +17,7 @@ import domain.model.Passenger
 import domain.model.Role
 import domain.model.Style
 import domain.useCase.AddLogbook
+import domain.useCase.EditLogbook
 import domain.useCase.GetContacts
 import domain.useCase.airplane.GetAirplanes
 import kotlinx.atomicfu.atomic
@@ -33,35 +34,37 @@ import ui.screens.editTimes.EditTimesComponent
 private const val MAX_AIRPORT_CODE_LENGTH = 5
 
 class AddLogbookComponent(
+    private val logbookToUpdateOrNull: Logbook?,
     componentContext: ComponentContext,
     private val logger: ILogger,
     private val addLogbook: AddLogbook,
+    private val editLogbook: EditLogbook,
     private val onNavigateBack: () -> Unit,
 ) : BaseMviViewModel<AddLogbookState, AddLogbookEvent>(
         componentContext = componentContext,
         initialState =
             AddLogbookState(
-                crossCountryTime = null,
-                dualGivenTime = null,
-                dualReceivedTime = null,
-                ifrActualTime = null,
-                ifrSimulatedTime = null,
-                ifrTime = null,
-                nightTime = null,
-                pilotInCommandTime = null,
-                secondInCommandTime = null,
-                simulatorTime = null,
-                totalBlockTime = DateTimePeriod(),
-                landingAirportCode = "",
-                landingTime = null,
-                landingDate = null,
-                takeOffDate = null,
-                personalRemarks = "",
-                remarks = "",
-                takeOffAirportCode = "",
-                takeOffTime = null,
+                crossCountryTime = logbookToUpdateOrNull?.crossCountryTime,
+                dualGivenTime = logbookToUpdateOrNull?.dualGivenTime,
+                dualReceivedTime = logbookToUpdateOrNull?.dualReceivedTime,
+                ifrActualTime = logbookToUpdateOrNull?.ifrActualTime,
+                ifrSimulatedTime = logbookToUpdateOrNull?.ifrSimulatedTime,
+                ifrTime = logbookToUpdateOrNull?.ifrTime,
+                nightTime = logbookToUpdateOrNull?.nightTime,
+                pilotInCommandTime = logbookToUpdateOrNull?.pilotInCommandTime,
+                secondInCommandTime = logbookToUpdateOrNull?.secondInCommandTime,
+                simulatorTime = logbookToUpdateOrNull?.simulatorTime,
+                totalBlockTime = logbookToUpdateOrNull?.totalBlockTime ?: DateTimePeriod(),
+                landingAirportCode = logbookToUpdateOrNull?.landingAirportCode ?: "",
+                landingTime = logbookToUpdateOrNull?.landingTime,
+                landingDate = logbookToUpdateOrNull?.landingDate,
+                takeOffDate = logbookToUpdateOrNull?.takeOffDate,
+                personalRemarks = logbookToUpdateOrNull?.personalRemarks ?: "",
+                remarks = logbookToUpdateOrNull?.remarks ?: "",
+                takeOffAirportCode = logbookToUpdateOrNull?.takeOffAirportCode ?: "",
+                takeOffTime = logbookToUpdateOrNull?.takeOffTime,
                 landings =
-                    listOf(
+                    logbookToUpdateOrNull?.landings ?: listOf(
                         Landing(
                             airportCode = "",
                             approachType = ApproachType.VISUAL,
@@ -70,11 +73,12 @@ class AddLogbookComponent(
                             id = 0,
                         ),
                     ),
-                passengers = listOf(),
-                style = Style.IFR,
-                airplane = null,
-                myRole = Role.PIC,
+                passengers = logbookToUpdateOrNull?.passengers ?: listOf(),
+                style = logbookToUpdateOrNull?.style ?: Style.IFR,
+                airplane = logbookToUpdateOrNull?.airplane,
+                myRole = logbookToUpdateOrNull?.myRole ?: Role.PIC,
                 requestState = null,
+                isEdit = logbookToUpdateOrNull != null,
             ),
     ) {
     private val landingsCreatedCounter = atomic(0)
@@ -205,7 +209,11 @@ class AddLogbookComponent(
                         resourceFlow(
                             logger = logger,
                         ) {
-                            addLogbook(logbook = logbook)
+                            if (logbookToUpdateOrNull == null) {
+                                addLogbook(logbook = logbook)
+                            } else {
+                                editLogbook(logbook = logbook)
+                            }
                         }.collect {
                             updateState { copy(requestState = it) }
                             if (it is Resource.Success) {

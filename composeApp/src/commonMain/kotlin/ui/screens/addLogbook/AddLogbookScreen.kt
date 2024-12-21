@@ -145,7 +145,7 @@ fun AddLogbookScreen(
                         .fillMaxWidth(),
             ) {
                 if (state.requestState !is Resource.Loading) {
-                    Text(text = "Dodaj lot")
+                    Text(text = if (state.isEdit) "Edytuj lot" else "Dodaj lot")
                 } else {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
                 }

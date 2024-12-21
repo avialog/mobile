@@ -12,7 +12,9 @@ import dev.gitlive.firebase.auth.auth
 import domain.useCase.AddContact
 import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
+import domain.useCase.DeleteLogbook
 import domain.useCase.EditContact
+import domain.useCase.EditLogbook
 import domain.useCase.GetContacts
 import domain.useCase.GetFlights
 import domain.useCase.GetProfile
@@ -135,6 +137,16 @@ val di =
         }
         bindProvider<AddLogbook> {
             AddLogbook(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<EditLogbook> {
+            EditLogbook(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<DeleteLogbook> {
+            DeleteLogbook(
                 avialogDataProvider = instance(),
             )
         }
