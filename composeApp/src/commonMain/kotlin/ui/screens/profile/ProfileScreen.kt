@@ -59,7 +59,7 @@ fun ProfileScreen(
             onNewEvent = onNewEvent,
         )
         UserDataSection(onNewEvent = onNewEvent)
-        SettingsSection(onNewEvent = onNewEvent)
+        // SettingsSection(onNewEvent = onNewEvent)
 
         TextButton(
             onClick = {

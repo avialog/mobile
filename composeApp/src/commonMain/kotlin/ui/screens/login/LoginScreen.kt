@@ -70,7 +70,7 @@ fun LoginScreen(
             modifier = Modifier.align(Alignment.End),
         ) {
             Text(
-                text = "Forgot password",
+                text = "Nie pamiętam hasła",
                 style =
                     TextStyle(
                         fontSize = 14.sp,
@@ -135,7 +135,7 @@ private fun Inputs(
                 OutlinedTextField(
                     value = password,
                     label = {
-                        Text(text = "Password")
+                        Text(text = "Hasło")
                     },
                     onValueChange = {
                         onNewEvent(LoginEvent.PasswordChange(it))
@@ -175,12 +175,12 @@ private fun Inputs(
 private fun Headers(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(
-            text = "Hi, sign in to Avialog! \uD83D\uDC4B",
+            text = "Cześć, zaloguj się do Avialog! \uD83D\uDC4B",
             fontWeight = FontWeight.SemiBold,
             fontSize = 25.sp,
         )
         Text(
-            text = "Put your data and let’s start!",
+            text = "Wpisz swoje dane i zaczynamy!",
             style =
                 TextStyle(
                     fontSize = 14.sp,
@@ -206,7 +206,7 @@ private fun Buttons(
             enabled = !isRequestInProgress,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Log in")
+            Text("Logowanie")
         }
         OutlinedButton(
             onClick = {
@@ -215,7 +215,7 @@ private fun Buttons(
             enabled = !isRequestInProgress,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Register")
+            Text("Rejestracja")
         }
         if (isRequestInProgress) {
             Loader(modifier = Modifier.align(Alignment.CenterHorizontally))
