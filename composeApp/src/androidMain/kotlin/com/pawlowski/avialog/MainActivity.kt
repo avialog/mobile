@@ -8,6 +8,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.retainedComponent
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.initialize
+import io.github.vinceglb.filekit.core.FileKit
 import navigation.RootComponent
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
             retainedComponent {
                 RootComponent(it)
             }
+        FileKit.init(this)
         setContent {
             App(root = root)
         }

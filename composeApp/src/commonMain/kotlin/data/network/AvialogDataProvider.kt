@@ -26,6 +26,7 @@ import domain.model.Passenger
 import domain.model.Profile
 import domain.model.Role
 import domain.model.Style
+import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpMethod
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.Instant
@@ -213,6 +214,13 @@ class AvialogDataProvider(
             url = "logbook?start=0&end=99999999999",
             httpMethod = HttpMethod.Get,
         ).map { it.toDomain() }
+
+    suspend fun genereteRaport(): ByteArray =
+        authorizedRequest(
+            url = "logbook/download",
+            httpMethod = HttpMethod.Get,
+            additionalRequestParams = {},
+        ).readBytes()
 
     private fun Landing.toDto() =
         LandingEntryDto(

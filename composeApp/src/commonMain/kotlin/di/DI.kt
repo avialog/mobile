@@ -15,6 +15,7 @@ import domain.useCase.DeleteContact
 import domain.useCase.DeleteLogbook
 import domain.useCase.EditContact
 import domain.useCase.EditLogbook
+import domain.useCase.GenerateReport
 import domain.useCase.GetContacts
 import domain.useCase.GetFlights
 import domain.useCase.GetProfile
@@ -152,6 +153,11 @@ val di =
         }
         bindProvider<GetFlights> {
             GetFlights(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<GenerateReport> {
+            GenerateReport(
                 avialogDataProvider = instance(),
             )
         }

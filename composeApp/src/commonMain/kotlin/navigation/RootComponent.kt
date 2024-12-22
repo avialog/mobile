@@ -21,6 +21,7 @@ import domain.useCase.DeleteContact
 import domain.useCase.DeleteLogbook
 import domain.useCase.EditContact
 import domain.useCase.EditLogbook
+import domain.useCase.GenerateReport
 import domain.useCase.GetContacts
 import domain.useCase.GetFlights
 import domain.useCase.GetProfile
@@ -114,10 +115,15 @@ class RootComponent(
             }
 
             Configuration.Carrier -> {
+                val generateReport by di.instance<GenerateReport>()
+                val logger by di.instance<ILogger>()
+
                 Child.Carrier(
                     component =
                         CarrierComponent(
                             componentContext = context,
+                            generateReport = generateReport,
+                            logger = logger,
                         ),
                 )
             }
