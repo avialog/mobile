@@ -17,17 +17,16 @@ class LoginComponent(
     private val areLoginInputsValid: AreLoginInputsValid,
     private val logger: ILogger,
     private val onNavigateToHome: () -> Unit,
-) :
-    BaseMviViewModel<LoginState, LoginEvent>(
-            componentContext = componentContext,
-            initialState =
-                LoginState(
-                    email = "",
-                    password = "",
-                    isRequestInProgress = false,
-                    showErrorIfAny = false,
-                ),
-        ) {
+) : BaseMviViewModel<LoginState, LoginEvent>(
+        componentContext = componentContext,
+        initialState =
+            LoginState(
+                email = "",
+                password = "",
+                isRequestInProgress = false,
+                showErrorIfAny = false,
+            ),
+    ) {
     private val errorNotificationChannel = Channel<String>(Channel.UNLIMITED)
     val errorNotificationFlow = errorNotificationChannel.receiveAsFlow()
 
@@ -36,26 +35,20 @@ class LoginComponent(
 
     override fun onNewEvent(event: LoginEvent) {
         when (event) {
-            LoginEvent.LoginClick -> {
-                onLoginClick()
-            }
+            LoginEvent.LoginClick -> onLoginClick()
 
-            LoginEvent.RegisterClick -> {
-                onRegisterClick()
-            }
+            LoginEvent.RegisterClick -> onRegisterClick()
 
-            is LoginEvent.EmailChange -> {
+            is LoginEvent.EmailChange ->
                 updateState {
                     copy(email = event.email)
                 }
-            }
-            is LoginEvent.PasswordChange -> {
+            is LoginEvent.PasswordChange ->
                 updateState {
                     copy(password = event.password)
                 }
-            }
 
-            LoginEvent.ForgotPasswordClick -> {}
+            LoginEvent.ForgotPasswordClick -> {} // Not supported yet
         }
     }
 

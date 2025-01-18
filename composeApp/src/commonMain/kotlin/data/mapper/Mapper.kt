@@ -36,4 +36,5 @@ fun AircraftResponseDto.toDomain(): Airplane =
         imageUrl = imageUrl,
         remarks = remarks,
         registrationNumber = registrationNumber,
+        isSingleEngine = isSingleEngine.toBoolean(),
     )

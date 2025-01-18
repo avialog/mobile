@@ -9,4 +9,5 @@ data class Airplane(
     val registrationNumber: String,
     val remarks: String?,
     val imageUrl: String?,
+    val isSingleEngine: Boolean,
 )

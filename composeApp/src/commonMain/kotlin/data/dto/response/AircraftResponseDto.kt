@@ -10,4 +10,5 @@ data class AircraftResponseDto(
     @SerialName("registration_number") val registrationNumber: String,
     @SerialName("remarks") val remarks: String?,
     @SerialName("image_url") val imageUrl: String?,
+    @SerialName("is_single_engine") val isSingleEngine: String,
 )

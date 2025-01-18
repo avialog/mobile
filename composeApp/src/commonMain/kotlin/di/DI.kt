@@ -12,8 +12,12 @@ import dev.gitlive.firebase.auth.auth
 import domain.useCase.AddContact
 import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
+import domain.useCase.DeleteLogbook
 import domain.useCase.EditContact
+import domain.useCase.EditLogbook
+import domain.useCase.GenerateReport
 import domain.useCase.GetContacts
+import domain.useCase.GetFlights
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
 import domain.useCase.LogOut
@@ -84,7 +88,7 @@ val di =
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true
-                explicitNulls = false
+                explicitNulls = true
             }
         }
         bindProvider<LogOut> {
@@ -134,6 +138,26 @@ val di =
         }
         bindProvider<AddLogbook> {
             AddLogbook(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<EditLogbook> {
+            EditLogbook(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<DeleteLogbook> {
+            DeleteLogbook(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<GetFlights> {
+            GetFlights(
+                avialogDataProvider = instance(),
+            )
+        }
+        bindProvider<GenerateReport> {
+            GenerateReport(
                 avialogDataProvider = instance(),
             )
         }

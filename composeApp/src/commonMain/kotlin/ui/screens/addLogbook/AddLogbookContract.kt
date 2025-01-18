@@ -36,6 +36,7 @@ data class AddLogbookState(
     val airplane: Airplane?,
     val myRole: Role,
     val requestState: Resource<Unit>?,
+    val isEdit: Boolean,
 )
 
 sealed interface AddLogbookEvent {

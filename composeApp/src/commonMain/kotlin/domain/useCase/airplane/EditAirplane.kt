@@ -11,11 +11,13 @@ class EditAirplane(
         registrationNumber: String,
         remarks: String?,
         imageUrl: String?,
+        isSingleEngine: Boolean,
     ) = avialogDataProvider.editAirplane(
         airplaneModel = airplaneModel,
         registrationNumber = registrationNumber,
         remarks = remarks,
         imageUrl = imageUrl,
         airplaneId = airplaneId,
+        isSingleEngine = isSingleEngine,
     )
 }

@@ -10,10 +10,12 @@ class AddAirplane(
         registrationNumber: String,
         remarks: String?,
         imageUrl: String?,
+        isSingleEngine: Boolean,
     ) = avialogDataProvider.addAirplane(
         airplaneModel = airplaneModel,
         registrationNumber = registrationNumber,
         remarks = remarks,
         imageUrl = imageUrl,
+        isSingleEngine = isSingleEngine,
     )
 }

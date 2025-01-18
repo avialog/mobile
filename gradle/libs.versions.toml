@@ -13,6 +13,7 @@ androidx-test-junit = "1.1.5"
 coil = "3.0.0-alpha06"
 compose = "1.6.2"
 compose-plugin = "1.6.0"
+filekitCore = "0.8.8"
 firebaseAuth = "1.11.1"
 fontAwesome = "1.1.0"
 junit = "4.13.2"
@@ -31,6 +32,7 @@ ktor-client = "2.3.6"
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
 decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "extensionsComposeJetbrains" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekitCore" }
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseAuth" }
 font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "fontAwesome" }
 kodein-di = { module = "org.kodein.di:kodein-di", version.ref = "kodeinDi" }

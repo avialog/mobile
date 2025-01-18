@@ -2,6 +2,7 @@ package ui.screens.addAirplane
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -21,10 +22,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -106,8 +109,10 @@ private fun Content(
             shape = RoundedCornerShape(size = 4.dp),
             enabled = !state.isRequestInProgress,
             modifier =
-                Modifier.padding(vertical = 16.dp)
-                    .heightIn(min = 54.dp).fillMaxWidth(),
+                Modifier
+                    .padding(vertical = 16.dp)
+                    .heightIn(min = 54.dp)
+                    .fillMaxWidth(),
         ) {
             Text(text = state.getScreenText())
         }
@@ -124,7 +129,7 @@ private fun AddAirplaneState.getScreenText() =
 private fun InputFields(
     state: AddAirplaneState,
     onNewEvent: (AddAirplaneEvent) -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 24.dp),
@@ -184,6 +189,23 @@ private fun InputFields(
             supportingText = "Numer rejestracyjny jest wymagany!".takeIf { showRegistrationNumberError },
         )
 
+        Row(horizontalArrangement = Arrangement.spacedBy(space = 16.dp)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Jednosilnikowy")
+                RadioButton(
+                    selected = state.isSingleEngine,
+                    onClick = { onNewEvent(AddAirplaneEvent.ChangeSingleEngine(newValue = true)) },
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Wielosilnikowy")
+                RadioButton(
+                    selected = !state.isSingleEngine,
+                    onClick = { onNewEvent(AddAirplaneEvent.ChangeSingleEngine(newValue = false)) },
+                )
+            }
+        }
+
         OutlinedTextField(
             value = state.remarks,
             onValueChange = {
@@ -201,7 +223,8 @@ private fun InputFields(
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             modifier =
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .heightIn(min = 140.dp),
         )
     }

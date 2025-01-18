@@ -66,7 +66,7 @@ fun App(root: RootComponent) {
                     childStack.active.configuration
                 },
                 onNavigateToFlights = {
-                    root.navigation.replaceCurrent(configuration = Configuration.Flights)
+                    root.navigation.replaceCurrent(configuration = Configuration.Flights())
                 },
                 onNavigateToCarrier = {
                     root.navigation.replaceCurrent(configuration = Configuration.Carrier)

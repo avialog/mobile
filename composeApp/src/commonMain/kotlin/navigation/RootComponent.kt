@@ -14,11 +14,16 @@ import data.repository.auth.IAuthRepository
 import di.di
 import domain.model.Airplane
 import domain.model.Contact
+import domain.model.Logbook
 import domain.useCase.AddContact
 import domain.useCase.AddLogbook
 import domain.useCase.DeleteContact
+import domain.useCase.DeleteLogbook
 import domain.useCase.EditContact
+import domain.useCase.EditLogbook
+import domain.useCase.GenerateReport
 import domain.useCase.GetContacts
+import domain.useCase.GetFlights
 import domain.useCase.GetProfile
 import domain.useCase.IsUserLoggedIn
 import domain.useCase.LogOut
@@ -41,6 +46,7 @@ import ui.screens.login.AreLoginInputsValid
 import ui.screens.login.LoginComponent
 import ui.screens.onboarding.OnboardingComponent
 import ui.screens.profile.ProfileComponent
+import kotlin.random.Random
 
 class RootComponent(
     componentContext: ComponentContext,
@@ -72,7 +78,7 @@ class RootComponent(
                         componentContext = context,
                         onNavigateToHome = {
                             navigation.navigate { _ ->
-                                listOf(Configuration.Flights)
+                                listOf(Configuration.Flights())
                             }
                         },
                         loginWithEmailAndPassword = loginWithEmailAndPassword,
@@ -83,25 +89,42 @@ class RootComponent(
                 )
             }
 
-            Configuration.Flights -> {
+            is Configuration.Flights -> {
                 val authRepository by di.instance<IAuthRepository>()
+                val getFlights by di.instance<GetFlights>()
+                val deleteLogbook by di.instance<DeleteLogbook>()
+
+                val logger by di.instance<ILogger>()
+
                 Child.Flights(
                     component =
                         FlightsComponent(
                             componentContext = context,
-                            authRepository = authRepository,
+                            getFlights = getFlights,
+                            logger = logger,
                             onNavigateToAddLogbook = {
-                                navigation.pushNew(Configuration.AddLogbook)
+                                navigation.pushNew(Configuration.AddLogbook())
                             },
+                            onNavigateToEditLogbook = {
+                                navigation.pushNew(
+                                    Configuration.AddLogbook(logbookToUpdateOrNull = it),
+                                )
+                            },
+                            deleteLogbook = deleteLogbook,
                         ),
                 )
             }
 
             Configuration.Carrier -> {
+                val generateReport by di.instance<GenerateReport>()
+                val logger by di.instance<ILogger>()
+
                 Child.Carrier(
                     component =
                         CarrierComponent(
                             componentContext = context,
+                            generateReport = generateReport,
+                            logger = logger,
                         ),
                 )
             }
@@ -137,7 +160,7 @@ class RootComponent(
                         OnboardingComponent(
                             componentContext = context,
                             onNavigateToHome = {
-                                navigation.replaceCurrent(Configuration.Flights)
+                                navigation.replaceCurrent(Configuration.Flights())
                             },
                             isUserLoggedIn = isUserLoggerIn,
                             onNavigateToLogin = {
@@ -251,9 +274,10 @@ class RootComponent(
                 )
             }
 
-            Configuration.AddLogbook -> {
+            is Configuration.AddLogbook -> {
                 val logger: ILogger by di.instance()
                 val addLogbook: AddLogbook by di.instance()
+                val editLogbook: EditLogbook by di.instance()
 
                 Child.AddLogbook(
                     component =
@@ -261,9 +285,11 @@ class RootComponent(
                             componentContext = context,
                             logger = logger,
                             addLogbook = addLogbook,
-                            onNavigateBack = {
-                                navigation.pop()
+                            onNavigateBackWithRefreshing = {
+                                navigation.replaceAll(Configuration.Flights())
                             },
+                            logbookToUpdateOrNull = config.logbookToUpdateOrNull,
+                            editLogbook = editLogbook,
                         ),
                 )
             }
@@ -317,7 +343,9 @@ class RootComponent(
         data object Login : Configuration()
 
         @Serializable
-        data object Flights : Configuration()
+        data class Flights(
+            val seed: Int = Random.nextInt(),
+        ) : Configuration()
 
         @Serializable
         data object Profile : Configuration()
@@ -345,6 +373,8 @@ class RootComponent(
         ) : Configuration()
 
         @Serializable
-        data object AddLogbook : Configuration()
+        data class AddLogbook(
+            val logbookToUpdateOrNull: Logbook? = null,
+        ) : Configuration()
     }
 }

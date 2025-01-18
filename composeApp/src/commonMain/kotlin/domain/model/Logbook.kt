@@ -3,8 +3,11 @@ package domain.model
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Logbook(
+    val flightId: Long?,
     val crossCountryTime: DateTimePeriod?,
     val dualGivenTime: DateTimePeriod?,
     val dualReceivedTime: DateTimePeriod?,
