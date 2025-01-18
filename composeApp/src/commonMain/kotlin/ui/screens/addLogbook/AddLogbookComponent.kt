@@ -39,7 +39,7 @@ class AddLogbookComponent(
     private val logger: ILogger,
     private val addLogbook: AddLogbook,
     private val editLogbook: EditLogbook,
-    private val onNavigateBack: () -> Unit,
+    private val onNavigateBackWithRefreshing: () -> Unit,
 ) : BaseMviViewModel<AddLogbookState, AddLogbookEvent>(
         componentContext = componentContext,
         initialState =
@@ -165,7 +165,7 @@ class AddLogbookComponent(
 
     override fun onNewEvent(event: AddLogbookEvent) {
         when (event) {
-            AddLogbookEvent.BackClick -> onNavigateBack()
+            AddLogbookEvent.BackClick -> onNavigateBackWithRefreshing()
 
             AddLogbookEvent.SaveClick -> {
                 if (actualState.requestState is Resource.Loading) return
@@ -198,6 +198,7 @@ class AddLogbookComponent(
                                     style = style,
                                     airplane = airplane!!,
                                     myRole = myRole,
+                                    flightId = logbookToUpdateOrNull?.flightId,
                                 )
                             }
                         }.onFailure {
@@ -217,7 +218,7 @@ class AddLogbookComponent(
                         }.collect {
                             updateState { copy(requestState = it) }
                             if (it is Resource.Success) {
-                                onNavigateBack()
+                                onNavigateBackWithRefreshing()
                             }
                             if (it is Resource.Error) {
                                 errorNotificationChannel.trySend(Unit)

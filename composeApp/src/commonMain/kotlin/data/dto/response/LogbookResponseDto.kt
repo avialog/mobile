@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LogbookResponseDto(
+    @SerialName("flight_id") val flightId: Long?,
     @SerialName("cross_country_time") val crossCountryTime: Long?,
     @SerialName("dual_given_time") val dualGivenTime: Long?,
     @SerialName("dual_received_time") val dualReceivedTime: Long?,

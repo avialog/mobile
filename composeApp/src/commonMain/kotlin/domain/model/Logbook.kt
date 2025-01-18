@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Logbook(
+    val flightId: Long?,
     val crossCountryTime: DateTimePeriod?,
     val dualGivenTime: DateTimePeriod?,
     val dualReceivedTime: DateTimePeriod?,

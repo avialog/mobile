@@ -209,6 +209,54 @@ class AvialogDataProvider(
         )
     }
 
+    suspend fun editLogbook(logbook: Logbook) {
+        authorizedRequest<AddLogbookRequestDto, EmptyRequestDto>(
+            url = "logbook/${logbook.flightId}",
+            httpMethod = HttpMethod.Put,
+            body =
+                with(logbook) {
+                    AddLogbookRequestDto(
+                        crossCountryTime = crossCountryTime.toWholeSeconds(),
+                        dualGivenTime = dualGivenTime.toWholeSeconds(),
+                        dualReceivedTime = dualReceivedTime.toWholeSeconds(),
+                        ifrActualTime = ifrActualTime.toWholeSeconds(),
+                        ifrSimulatedTime = ifrSimulatedTime.toWholeSeconds(),
+                        ifrTime = ifrTime.toWholeSeconds(),
+                        nightTime = nightTime.toWholeSeconds(),
+                        pilotInCommandTime = pilotInCommandTime.toWholeSeconds(),
+                        secondInCommandTime = secondInCommandTime.toWholeSeconds(),
+                        simulatorTime = simulatorTime.toWholeSeconds(),
+                        totalBlockTime = totalBlockTime.toWholeSeconds(),
+                        landingAirportCode = landingAirportCode,
+                        landingTime = landingDate.atTime(landingTime).toInstant(TimeZone.UTC).toString(),
+                        personalRemarks = personalRemarks,
+                        remarks = remarks,
+                        takeOffAirportCode = takeOffAirportCode,
+                        takeOffTime = takeOffDate.atTime(takeOffTime).toInstant(TimeZone.UTC).toString(),
+                        landings =
+                            landings.map {
+                                it.toDto()
+                            },
+                        passengers =
+                            passengers.map {
+                                it.toDto()
+                            },
+                        style = style.toDto(),
+                        myRole = myRole.toDto(),
+                        signatureUrl = null,
+                        airplaneId = logbook.airplane.id,
+                    )
+                },
+        )
+    }
+
+    suspend fun deleteLogbook(logbook: Logbook) {
+        authorizedRequest<EmptyRequestDto, EmptyRequestDto>(
+            url = "logbook/${logbook.flightId}",
+            httpMethod = HttpMethod.Delete,
+        )
+    }
+
     suspend fun getFlights(): List<Logbook> =
         authorizedRequest<EmptyRequestDto, List<LogbookResponseDto>>(
             url = "logbook?start=0&end=99999999999",
@@ -355,6 +403,7 @@ class AvialogDataProvider(
             style = style.toDomain(),
             airplane = getAirplanes().first { it.id == airplaneId },
             myRole = myRole.toDomain(),
+            flightId = flightId,
         )
     }
 }

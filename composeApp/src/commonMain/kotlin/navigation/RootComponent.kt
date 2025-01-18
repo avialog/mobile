@@ -46,6 +46,7 @@ import ui.screens.login.AreLoginInputsValid
 import ui.screens.login.LoginComponent
 import ui.screens.onboarding.OnboardingComponent
 import ui.screens.profile.ProfileComponent
+import kotlin.random.Random
 
 class RootComponent(
     componentContext: ComponentContext,
@@ -77,7 +78,7 @@ class RootComponent(
                         componentContext = context,
                         onNavigateToHome = {
                             navigation.navigate { _ ->
-                                listOf(Configuration.Flights)
+                                listOf(Configuration.Flights())
                             }
                         },
                         loginWithEmailAndPassword = loginWithEmailAndPassword,
@@ -88,7 +89,7 @@ class RootComponent(
                 )
             }
 
-            Configuration.Flights -> {
+            is Configuration.Flights -> {
                 val authRepository by di.instance<IAuthRepository>()
                 val getFlights by di.instance<GetFlights>()
                 val deleteLogbook by di.instance<DeleteLogbook>()
@@ -159,7 +160,7 @@ class RootComponent(
                         OnboardingComponent(
                             componentContext = context,
                             onNavigateToHome = {
-                                navigation.replaceCurrent(Configuration.Flights)
+                                navigation.replaceCurrent(Configuration.Flights())
                             },
                             isUserLoggedIn = isUserLoggerIn,
                             onNavigateToLogin = {
@@ -284,8 +285,8 @@ class RootComponent(
                             componentContext = context,
                             logger = logger,
                             addLogbook = addLogbook,
-                            onNavigateBack = {
-                                navigation.pop()
+                            onNavigateBackWithRefreshing = {
+                                navigation.replaceAll(Configuration.Flights())
                             },
                             logbookToUpdateOrNull = config.logbookToUpdateOrNull,
                             editLogbook = editLogbook,
@@ -342,7 +343,9 @@ class RootComponent(
         data object Login : Configuration()
 
         @Serializable
-        data object Flights : Configuration()
+        data class Flights(
+            val seed: Int = Random.nextInt(),
+        ) : Configuration()
 
         @Serializable
         data object Profile : Configuration()
